@@ -14,6 +14,7 @@ namespace ChristmasGame
 		[Net] public int SizeY { get; set; }
 
 		[Net] List<GridNode> Nodes { get; set; } = new();
+		[Net] List<GridItem> Items { get; set; } = new();
 
 		Model TileModel;
 		ModelEntity TileOverlay;
@@ -102,7 +103,20 @@ namespace ChristmasGame
 			return null;
 		}
 
-		public bool PlaceNode<T>(int x, int y, int direction = 0) where T : GridNode
+		public List<GridItem> GetItemsInTile(int x, int y)
+		{
+			List<GridItem> items = new List<GridItem>();
+
+			foreach(var item in Items)
+			{
+				if ( x == (int)item.Pos.x && y == (int)item.Pos.y )
+					items.Add( item );
+			}
+
+			return items;
+		}
+
+		public bool PlaceNode<T>( string type, int x, int y, int direction = 0 ) where T : GridNode
 		{
 			Assert.True( IsServer );
 
@@ -113,6 +127,7 @@ namespace ChristmasGame
 
 			var node = Create<T>();
 			node.Parent = this;
+			node.SetType( type );
 
 			node.X = x;
 			node.Y = y;
@@ -120,7 +135,7 @@ namespace ChristmasGame
 			node.Position = new Vector3((x - SizeX / 2.0f) * gridScale + gridScale / 2.0f, (y - SizeY / 2.0f) * gridScale + gridScale / 2.0f, 0.0f);
 			node.Direction = direction;
 
-			node.SetModel( "models/props/cs_office/chair_office.vmdl" );
+			//node.SetModel( "models/props/cs_office/chair_office.vmdl" );
 
 			Nodes.Add( node );
 

@@ -1,11 +1,14 @@
 using Sandbox;
 using Sandbox.UI.Construct;
 using System;
+using System.Collections.Generic;
 
 namespace ChristmasGame
 {
 	public partial class GridNode : ModelEntity
 	{
+		public string Type;
+
 		public int X = 0;
 		public int Y = 0;
 
@@ -29,20 +32,29 @@ namespace ChristmasGame
 		{
 
 		}
-	}
 
-	public partial class ProducerNode : GridNode
-	{
+		public void SetType(string type)
+		{
+			var typeData = ChristmasGame.Config.nodes[type];
 
-	}
+			Type = type;
 
-	public partial class ConsumerNode : GridNode
-	{
+			SetModel( typeData.model );
+		}
 
-	}
+		public void Tick()
+		{
+			if ( Parent is not GridEntity grid )
+				return;
 
-	public partial class TransformerNode : GridNode
-	{
+			List<GridItem> items = grid.GetItemsInTile( X, Y );
 
+			const float moveSpeed = 1.0f;
+
+			foreach(var item in items)
+			{
+
+			}
+		}
 	}
 }

@@ -1,0 +1,99 @@
+{
+    "items": {
+        "toy": {
+            "label": "Toys",
+            "models": [
+                "models/items/blocks.vmdl",
+                "models/items/teddybear.vmdl"
+            ]
+        },
+        "box": {
+            "label": "Boxes",
+            "models": [
+                "models/sbox_props/pizza_box/pizza_box.vmdl"
+            ]
+        },
+        "present": {
+            "label": "Presents",
+            "models": [
+                "models/sbox_props/benches/old_bench.vmdl"
+            ]
+        },
+        "coal": {
+            "label": "Coal",
+            "models": [
+                "models/editor/axis_helper_thick.vmdl"
+            ]
+        }
+    },
+    "nodes": {
+        "factory": {
+            "label": "Toy Factory",
+            "model": "models/dev/playerstart_tint.vmdl",
+            "inputs": [],
+            "outputs": [
+                "toy"
+            ],
+            "tiers": [
+                {
+                    "rate": 0.5
+                },
+                {
+                    "rate": 2.0
+                }
+            ]
+        },
+        "boxer": {
+            "label": "Toy Boxer",
+            "model": "models/dev/playerstart_tint.vmdl",
+            "inputs": [
+                "toy"
+            ],
+            "outputs": [
+                "box"
+            ],
+            "tiers": [
+                {
+                    "rate": 0.5
+                },
+                {
+                    "rate": 2.0
+                }
+            ]
+        },
+        "wrapper": {
+            "label": "Present Wrapper",
+            "model": "models/dev/playerstart_tint.vmdl",
+            "inputs": [
+                "box"
+            ],
+            "outputs": [
+                "present"
+            ],
+            "tiers": [
+                {
+                    "rate": 0.5
+                },
+                {
+                    "rate": 2.0
+                }
+            ]
+        },
+        "mine": {
+            "label": "Coal Mine",
+            "model": "models/dev/playerstart_tint.vmdl",
+            "inputs": [],
+            "outputs": [
+                "coal"
+            ],
+            "tiers": [
+                {
+                    "rate": 0.5
+                },
+                {
+                    "rate": 2.0
+                }
+            ]
+        }
+    }
+}

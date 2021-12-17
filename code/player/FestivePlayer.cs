@@ -124,20 +124,20 @@ namespace ChristmasGame
 			//BuildHint.Rotation = new Angles( 0.0f, BuildRotation * 90.0f, 0.0f ).ToRotation();
 		}
 
-		public void PlaceNodeServer( int x, int y, int dir )
+		public void PlaceNodeServer( string type, int x, int y, int dir )
 		{
 			if ( !IsServer )
 				return;
 
 			Log.Info( "placing node" );
-			ClientSleigh.Grid.PlaceNode<GridNode>( x, y, dir );
+			ClientSleigh.Grid.PlaceNode<GridNode>( type, x, y, dir );
 		}
 		
 		[ServerCmd]
-		static void PlaceNode(int x, int y, int dir)
+		static void PlaceNode( string type, int x, int y, int dir )
 		{
 			Entity pawn = ConsoleSystem.Caller.Pawn;
-			(pawn as FestivePlayer).PlaceNodeServer( x, y, dir );
+			(pawn as FestivePlayer).PlaceNodeServer( type, x, y, dir );
 		}
 
 		public override void BuildInput( InputBuilder input )
@@ -170,7 +170,7 @@ namespace ChristmasGame
 				if ( input.Pressed( InputButton.Attack1 ) )
 				{
 					Log.Info( "place" );
-					PlaceNode( BuildTileX, BuildTileY, BuildRotation );
+					PlaceNode( "factory", BuildTileX, BuildTileY, BuildRotation );
 				}
 			}
 

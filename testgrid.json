@@ -1,0 +1,23 @@
+{
+  "items": {
+    "test": {
+      "label": "test item",
+      "models": []
+    }
+  },
+  "nodes": {
+    "cool": {
+      "label": "test node",
+      "model": null,
+      "inputs": [],
+      "outputs": [
+        "b"
+      ],
+      "tiers": [
+        {
+          "rate": 1
+        }
+      ]
+    }
+  }
+}

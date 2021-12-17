@@ -5,12 +5,57 @@ using System.Collections.Generic;
 
 namespace ChristmasGame
 {
+	public struct GridConfig
+	{
+		public Dictionary<string, ItemType> items { get; set; }
+		public Dictionary<string, NodeType> nodes { get; set; }
+	}
+
+	public struct ItemType
+	{
+		public string label { get; set; }
+		public List<string> models { get; set; }
+	}
+
+	public struct NodeType
+	{
+		public string label { get; set; }
+		public string model { get; set; }
+		public List<string> inputs { get; set; }
+		public List<string> outputs { get; set; }
+		public List<NodeTier> tiers { get; set; }
+	}
+
+	public struct NodeTier
+	{
+		public float rate { get; set; }
+	}
+
 	public partial class ChristmasGame : Game
 	{
+		public static GridConfig Config;
+
 		[Net] List<Sleigh> ActiveSleighs { get; set; } = new();
 
 		public ChristmasGame()
 		{
+			//GridConfig test = new GridConfig();
+			//test.items["test"] = new ItemType() { label = "test item" };
+
+			//NodeType testnode = new NodeType() { label = "test node" };
+			////testnode.inputs.Add( "a" );
+			//testnode.outputs.Add( "b" );
+			//testnode.tiers.Add( new NodeTier() { rate = 1.0f } );
+			//test.nodes["cool"] = testnode;
+
+			//FileSystem.Data.WriteJson( "testgrid.json", test );
+			//Config = FileSystem.Mounted.ReadJson<GridConfig>( "testgrid.json" );
+
+			Config = FileSystem.Mounted.ReadJson<GridConfig>( "grid.json" );
+
+			Log.Info("Config loaded.");
+			Log.Info(Config.items.Count + " item types, " + Config.nodes.Count + " node types.");
+
 			if ( IsServer )
 			{
 				ActiveSleighs.Add( Create<Sleigh>() );
@@ -27,6 +72,7 @@ namespace ChristmasGame
 
 		public override void ClientJoined( Client client )
 		{
+
 			base.ClientJoined( client );
 
 			var player = new FestivePlayer();
