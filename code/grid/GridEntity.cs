@@ -14,6 +14,7 @@ namespace ChristmasGame
 		[Net] public int SizeY { get; set; }
 
 		[Net] List<GridNode> Nodes { get; set; } = new();
+		//[Net] Dictionary<Tuple<int, int>, GridNode> Nodes { get; set; } = new();
 		[Net] List<GridItem> Items { get; set; } = new();
 
 		Model TileModel;
@@ -37,6 +38,31 @@ namespace ChristmasGame
 
 			CreateTileMesh();
 
+		}
+
+		public override void Simulate( Client cl )
+		{
+			base.Simulate( cl );
+
+			foreach ( var node in Nodes )
+				node.Tick();
+
+			List<GridItem> staleItems = new();
+
+			foreach ( var item in Items )
+			{
+				item.Update();
+
+				if ( GetNodeAt( (int)Math.Floor(item.Pos.x), (int)Math.Floor(item.Pos.y) ) == null )
+					staleItems.Add( item );
+			}
+
+			foreach ( var item in staleItems )
+			{
+				item.Model.Delete();
+				item.Model = null;
+				Items.Remove( item );
+			}
 		}
 
 		void CreateTileMesh()
@@ -94,6 +120,10 @@ namespace ChristmasGame
 
 		public GridNode GetNodeAt(int x, int y)
 		{
+			//if ( Nodes.TryGetValue( new Tuple<int, int>( x, y ), out GridNode node ) )
+			//	return node;
+			//return Nodes.Find( node => node.X == x && node.Y == y );
+
 			foreach(var node in Nodes)
 			{
 				if ( node.X == x && node.Y == y )
@@ -109,7 +139,7 @@ namespace ChristmasGame
 
 			foreach(var item in Items)
 			{
-				if ( x == (int)item.Pos.x && y == (int)item.Pos.y )
+				if ( x == (int)Math.Floor(item.Pos.x) && y == (int)Math.Floor(item.Pos.y) )
 					items.Add( item );
 			}
 
@@ -137,15 +167,46 @@ namespace ChristmasGame
 
 			//node.SetModel( "models/props/cs_office/chair_office.vmdl" );
 
+			//Nodes.Add( new Tuple<int, int>(x, y), node );
 			Nodes.Add( node );
 
 			return true;
+		}
+
+		public void PlaceItem( string type, int x, int y )
+		{
+			Assert.True( IsServer );
+
+			var item = new GridItem();
+			item.Grid = this;
+			item.SetType(type);
+
+			item.Pos = new Vector2( x + 0.5f, y + 0.5f );
+
+			Items.Add( item );
 		}
 
 		public void UpdateNodes()
 		{
 			foreach ( var node in Nodes )
 				node.Update();
+		}
+
+		public Vector3 GridToLocal(Vector2 pos)
+		{
+			return new Vector3( (pos.x - SizeX / 2) * gridScale, (pos.y - SizeY / 2) * gridScale, 0.0f );
+		}
+
+		public Vector3 GridToWorld(Vector2 pos)
+		{
+			Transform worldTransform = Parent.Transform.ToWorld( new Transform( OverlayPosition ) );
+			return worldTransform.PointToWorld( new Vector3( pos.x, pos.y, 0.0f ) * gridScale );
+		}
+
+		public Vector2 WorldToGrid(Vector3 pos)
+		{
+			Transform worldTransform = Parent.Transform.ToWorld( new Transform( OverlayPosition ) );
+			return worldTransform.PointToLocal( pos ) / gridScale;
 		}
 
 		public bool RayTest( Ray ray, ref int hitX, ref int hitY, ref Vector3 worldPos )
@@ -159,9 +220,7 @@ namespace ChristmasGame
 
 			DebugOverlay.Line( (Vector3)hit, (Vector3)hit + new Vector3(0.0f, 0.0f, 50.0f) );
 
-			Vector3 localPos = worldTransform.PointToLocal( (Vector3)hit );
-			localPos /= gridScale;
-			//localPos += new Vector3(SizeX / 2.0f, SizeY / 2.0f, 0.0f);
+			Vector3 localPos = WorldToGrid( (Vector3)hit );
 
 			if ( localPos.x < 0 || localPos.x >= SizeX || localPos.y < 0 || localPos.y >= SizeY )
 				return false;
@@ -169,7 +228,7 @@ namespace ChristmasGame
 			//Log.Info("local pos " + localPos + " hit pos " + (Vector3)hit );
 			hitX = (int)localPos.x;
 			hitY = (int)localPos.y;
-			worldPos = worldTransform.PointToWorld( new Vector3( hitX * gridScale + gridScale / 2.0f, hitY * gridScale + gridScale / 2.0f, 0.0f ) );
+			worldPos = GridToWorld( new Vector3( hitX + 0.5f, hitY + 0.5f, 0.0f ) );
 
 			//Log.Info("grid position " + localPos.ToString());
 			return true;

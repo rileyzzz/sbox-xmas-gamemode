@@ -34,6 +34,7 @@ namespace ChristmasGame
 		{
 			base.Simulate( cl );
 
+			Grid?.Simulate( cl );
 
 			//Rotation = new Angles(0.0f, Time.Now, 0.0f).ToRotation();
 		}

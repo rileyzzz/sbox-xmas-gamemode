@@ -132,12 +132,29 @@ namespace ChristmasGame
 			Log.Info( "placing node" );
 			ClientSleigh.Grid.PlaceNode<GridNode>( type, x, y, dir );
 		}
-		
+
+
+		public void PlaceItemServer( string type, int x, int y )
+		{
+			if ( !IsServer )
+				return;
+
+			Log.Info( "placing node" );
+			ClientSleigh.Grid.PlaceItem( type, x, y );
+		}
+
 		[ServerCmd]
 		static void PlaceNode( string type, int x, int y, int dir )
 		{
 			Entity pawn = ConsoleSystem.Caller.Pawn;
 			(pawn as FestivePlayer).PlaceNodeServer( type, x, y, dir );
+		}
+
+		[ServerCmd]
+		static void PlaceItem( string type, int x, int y )
+		{
+			Entity pawn = ConsoleSystem.Caller.Pawn;
+			(pawn as FestivePlayer).PlaceItemServer( type, x, y );
 		}
 
 		public override void BuildInput( InputBuilder input )
@@ -170,7 +187,18 @@ namespace ChristmasGame
 				if ( input.Pressed( InputButton.Attack1 ) )
 				{
 					Log.Info( "place" );
-					PlaceNode( "factory", BuildTileX, BuildTileY, BuildRotation );
+					PlaceNode( "conveyorbelt", BuildTileX, BuildTileY, BuildRotation );
+				}
+
+				//if ( input.Pressed( InputButton.Flashlight ) )
+				//{
+				//	Log.Info( "place" );
+				//	PlaceNode( "factory", BuildTileX, BuildTileY, BuildRotation );
+				//}
+
+				if ( input.Pressed( InputButton.Flashlight ) )
+				{
+					PlaceItem( "toy", 0, 0 );
 				}
 			}
 

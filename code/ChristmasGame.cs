@@ -21,6 +21,7 @@ namespace ChristmasGame
 	{
 		public string label { get; set; }
 		public string model { get; set; }
+		public string type { get; set; }
 		public List<string> inputs { get; set; }
 		public List<string> outputs { get; set; }
 		public List<NodeTier> tiers { get; set; }
@@ -34,11 +35,14 @@ namespace ChristmasGame
 	public partial class ChristmasGame : Game
 	{
 		public static GridConfig Config;
+		public static Random rand;
 
 		[Net] List<Sleigh> ActiveSleighs { get; set; } = new();
 
 		public ChristmasGame()
 		{
+			rand = new Random();
+
 			//GridConfig test = new GridConfig();
 			//test.items["test"] = new ItemType() { label = "test item" };
 
