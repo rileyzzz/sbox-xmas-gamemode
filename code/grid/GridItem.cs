@@ -35,6 +35,12 @@ namespace ChristmasGame
 		{
 		}
 
+		public void Delete()
+		{
+			Model.Delete();
+			Model = null;
+		}
+
 		public void SetType(string type)
 		{
 			Assert.True( Grid.IsServer );
@@ -43,6 +49,7 @@ namespace ChristmasGame
 
 			var typeData = ChristmasGame.Config.items[type];
 
+			Model?.Delete();
 			Model = Entity.Create<ModelEntity>();
 			Model.Parent = Grid;
 			Model.Transmit = TransmitType.Always;

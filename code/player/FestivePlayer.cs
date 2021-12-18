@@ -190,11 +190,17 @@ namespace ChristmasGame
 					PlaceNode( "conveyorbelt", BuildTileX, BuildTileY, BuildRotation );
 				}
 
-				//if ( input.Pressed( InputButton.Flashlight ) )
-				//{
-				//	Log.Info( "place" );
-				//	PlaceNode( "factory", BuildTileX, BuildTileY, BuildRotation );
-				//}
+				if ( input.Pressed( InputButton.Jump ) )
+				{
+					Log.Info( "place" );
+					PlaceNode( "boxer", BuildTileX, BuildTileY, BuildRotation );
+				}
+
+				if ( input.Pressed( InputButton.Use ) )
+				{
+					Log.Info( "place" );
+					PlaceNode( "factory", BuildTileX, BuildTileY, BuildRotation );
+				}
 
 				if ( input.Pressed( InputButton.Flashlight ) )
 				{

@@ -10,7 +10,7 @@
         "box": {
             "label": "Boxes",
             "models": [
-                "models/sbox_props/pizza_box/pizza_box.vmdl"
+                "models/sbox_props/benches/old_bench.vmdl"
             ]
         },
         "present": {
@@ -29,7 +29,7 @@
     "nodes": {
         "factory": {
             "label": "Toy Factory",
-            "model": "models/dev/playerstart_tint.vmdl",
+            "model": "models/nodes/factory/tier1.vmdl",
             "type": "producer",
             "inputs": [],
             "outputs": [
@@ -37,10 +37,10 @@
             ],
             "tiers": [
                 {
-                    "rate": 0.5
+                    "rate": 1.5
                 },
                 {
-                    "rate": 2.0
+                    "rate": 1.0
                 }
             ]
         },
@@ -59,7 +59,7 @@
                     "rate": 0.5
                 },
                 {
-                    "rate": 2.0
+                    "rate": 0.5
                 }
             ]
         },

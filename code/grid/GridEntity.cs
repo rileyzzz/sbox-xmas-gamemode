@@ -58,11 +58,13 @@ namespace ChristmasGame
 			}
 
 			foreach ( var item in staleItems )
-			{
-				item.Model.Delete();
-				item.Model = null;
-				Items.Remove( item );
-			}
+				DeleteItem( item );
+		}
+
+		public void DeleteItem(GridItem item)
+		{
+			item.Delete();
+			Items.Remove( item );
 		}
 
 		void CreateTileMesh()
