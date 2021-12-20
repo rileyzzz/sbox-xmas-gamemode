@@ -1,14 +1,36 @@
 using Sandbox;
 using Sandbox.UI.Construct;
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace ChristmasGame
 {
+
+	public partial class InventoryItem : BaseNetworkable
+	{
+		[Net] public string Type { get; set; }
+		[Net] public int Tier { get; set; }
+		[Net] public int Count { get; set; }
+
+		public InventoryItem(string type, int tier)
+		{
+			Type = type;
+			Tier = tier;
+			Count = 0;
+		}
+
+		public InventoryItem()
+		{
+		}
+	}
+
 	public partial class FestivePlayer : Player
 	{
 		[Net] public Sleigh ClientSleigh { get; set; }
 
-		bool BuildMode = false;
+		bool GridHovered = false;
+		public bool BuildMode = false;
 
 		int BuildRotation = 0;
 		int BuildTileX = 0;
@@ -16,23 +38,58 @@ namespace ChristmasGame
 		
 		ModelEntity BuildHint;
 
+		InventoryItem _activeItem;
+		public InventoryItem ActiveItem
+		{
+			get => _activeItem;
+			set
+			{
+				_activeItem = value;
+				UpdateHintModel();
+			}
+		}
+
+		[Net] public IList<InventoryItem> NodeInventory { get; set; };
+
 		public FestivePlayer()
 		{
+			NodeInventory = new List<InventoryItem>();
+
+			if ( IsServer )
+			{
+				foreach(var type in ChristmasGame.Config.nodes)
+				{
+					for( int i = 0; i < type.Value.tiers.Count; i++ )
+					{
+						var item = new InventoryItem( type.Key, i );
+						if ( i == 0 && type.Key == "factory" )
+							item.Count = 1;
+						NodeInventory.Add( item );
+					}
+
+					Log.Info("adding to node inventory");
+				}
+			}
+		}
+
+		static void UpdateHUD()
+		{
+			if ( !Local.Pawn.IsClient )
+				return;
+
+			foreach( var child in Local.Hud.Children )
+				(child as ChristmasHUD).Update();
 		}
 
 		public override void Respawn()
 		{
 			SetModel( "models/citizen/citizen.vmdl" );
 
-			//
-			// Use WalkController for movement (you can make your own PlayerController for 100% control)
-			//
-			Controller = new WalkController();
+			//Controller = new WalkController();
+			Controller = new TopDownController();
 
-			//
-			// Use StandardPlayerAnimator  (you can make your own PlayerAnimator for 100% control)
-			//
-			Animator = new StandardPlayerAnimator();
+			//Animator = new StandardPlayerAnimator();
+			Animator = new TopDownAnimator();
 
 			Camera = new SleighCamera();
 
@@ -54,29 +111,55 @@ namespace ChristmasGame
 			{
 				if ( BuildMode )
 				{
+					GridNode hoveredNode = NodeTrace();
 
-					Ray tr = new Ray( Input.Cursor.Origin, Input.Cursor.Direction );
-					//DebugOverlay.Line( tr.Origin, tr.Origin + tr.Direction * 1000.0f, 0.1f );
+					if(hoveredNode != null)
+						GridHovered = false;
+					else
+						UpdateHintLocation();
 
-					int hitX = 0;
-					int hitY = 0;
-					Vector3 worldPos = new Vector3();
-					if ( ClientSleigh.Grid.RayTest( tr, ref hitX, ref hitY, ref worldPos ) )
-					{
-						//Log.Info("hit tile " + hitX + " " + hitY);
-
-						BuildHint.Position = worldPos;
-						//BuildHint.Position = Vector3.Lerp( BuildHint.Position, worldPos, 0.8f );
-
-						BuildTileX = hitX;
-						BuildTileY = hitY;
-					}
-
-					Rotation targetRotation = Rotation.From(new Angles( 0.0f, BuildRotation * 90.0f, 0.0f ));
-					BuildHint.Rotation = Rotation.Lerp( BuildHint.Rotation, targetRotation, 0.4f );
+					BuildHint.EnableDrawing = GridHovered;
 				}
 			}
 
+		}
+
+		GridNode NodeTrace()
+		{
+			Ray tr = new Ray( Input.Cursor.Origin, Input.Cursor.Direction );
+			var result = Trace.Ray( tr, 1000.0f ).WithAllTags( "festive_node" ).Run();
+
+			if ( result.Hit && result.Entity is GridNode node )
+				return node;
+
+			return null;
+		}
+
+		void UpdateHintLocation()
+		{
+			Ray tr = new Ray( Input.Cursor.Origin, Input.Cursor.Direction );
+
+			int hitX = 0;
+			int hitY = 0;
+			Vector3 worldPos = new Vector3();
+			if ( ClientSleigh.Grid.RayTest( tr, ref hitX, ref hitY, ref worldPos ) )
+			{
+				//Log.Info("hit tile " + hitX + " " + hitY);
+
+				BuildHint.Position = worldPos;
+				//BuildHint.Position = Vector3.Lerp( BuildHint.Position, worldPos, 0.8f );
+
+				BuildTileX = hitX;
+				BuildTileY = hitY;
+
+				GridHovered = true;
+			}
+			else
+				GridHovered = false;
+
+
+			Rotation targetRotation = Rotation.From( new Angles( 0.0f, BuildRotation * 90.0f, 0.0f ) );
+			BuildHint.Rotation = Rotation.Lerp( BuildHint.Rotation, targetRotation, 0.4f );
 		}
 
 		public override void OnKilled()
@@ -84,6 +167,15 @@ namespace ChristmasGame
 			base.OnKilled();
 
 			EnableDrawing = false;
+		}
+
+		void UpdateHintModel()
+		{
+			if ( BuildHint == null )
+				return;
+
+			BuildHint.SetModel( ActiveItem != null ? ChristmasGame.Config.nodes[ActiveItem.Type].tiers[ActiveItem.Tier].model : "" );
+			BuildHint.SetMaterialOverride( Material.Load( "materials/hint.vmat" ) );
 		}
 
 		public void ToggleBuildMode()
@@ -95,7 +187,8 @@ namespace ChristmasGame
 				Log.Info("Entering build mode.");
 
 				BuildHint = Create<ModelEntity>();
-				BuildHint.SetModel( "models/props/cs_office/chair_office.vmdl" );
+				//BuildHint.SetModel( "models/props/cs_office/chair_office.vmdl" );
+				UpdateHintModel();
 			}
 			else
 			{
@@ -106,6 +199,8 @@ namespace ChristmasGame
 			}
 
 			ClientSleigh.Grid.SetTileOverlayVisible( BuildMode );
+
+			UpdateHUD();
 		}
 
 		void RotateBuildLeft()
@@ -124,37 +219,121 @@ namespace ChristmasGame
 			//BuildHint.Rotation = new Angles( 0.0f, BuildRotation * 90.0f, 0.0f ).ToRotation();
 		}
 
-		public void PlaceNodeServer( string type, int x, int y, int dir )
+		public void PlaceNodeServer( Client cl, string type, int x, int y, int dir, int tier )
 		{
 			if ( !IsServer )
 				return;
 
 			Log.Info( "placing node" );
-			ClientSleigh.Grid.PlaceNode<GridNode>( type, x, y, dir );
+			ClientSleigh.Grid.PlaceNode<GridNode>( type, x, y, dir, tier );
 		}
 
 
-		public void PlaceItemServer( string type, int x, int y )
+		//public void PlaceItemServer( string type, int x, int y )
+		//{
+		//	if ( !IsServer )
+		//		return;
+
+		//	Log.Info( "placing node" );
+		//	ClientSleigh.Grid.PlaceItem( type, x, y );
+		//}
+
+		//[ServerCmd]
+		//static void PlaceNode( string type, int x, int y, int dir, int tier )
+		//{
+			
+			
+		//}
+
+		//[ServerCmd]
+		//static void PlaceItem( string type, int x, int y )
+		//{
+		//	Entity pawn = ConsoleSystem.Caller.Pawn;
+		//	(pawn as FestivePlayer).PlaceItemServer( type, x, y );
+		//}
+
+		[ClientRpc]
+		public static void NodePlaced()
 		{
-			if ( !IsServer )
+			Log.Info("node placed client callback");
+
+			if ( Local.Pawn is not FestivePlayer player )
 				return;
 
-			Log.Info( "placing node" );
-			ClientSleigh.Grid.PlaceItem( type, x, y );
+			if ( player.ActiveItem != null && player.ActiveItem.Count == 0 )
+				player.ActiveItem = null;
+
+			UpdateHUD();
+
+			player.ClientSleigh.Grid.SelectedNode = null;
 		}
 
 		[ServerCmd]
-		static void PlaceNode( string type, int x, int y, int dir )
+		static void Place( string type, int tier, int x, int y, int dir )
 		{
-			Entity pawn = ConsoleSystem.Caller.Pawn;
-			(pawn as FestivePlayer).PlaceNodeServer( type, x, y, dir );
+			Client cl = ConsoleSystem.Caller;
+
+			if ( cl.Pawn is not FestivePlayer player )
+				return;
+
+			//Log.Info("Attempting to place item " + itemId);
+			//var item = (player.NodeInventory as List<InventoryItem>).Find( a => a.NetworkIdent == itemId );
+			InventoryItem item = null;
+			foreach( var a in player.NodeInventory )
+			{
+				if( a.Type == type && a.Tier == tier )
+				{
+					item = a;
+					break;
+				}
+			}
+
+			//InventoryItem item = (player.NodeInventory as List<InventoryItem>).Find( a => a.Type == type && a.Tier == tier );
+
+			if ( item == null || item.Count == 0 )
+			{
+				Log.Warning("Failed to place item.");
+				return;
+			}
+
+			item.Count--;
+			(cl.Pawn as FestivePlayer).PlaceNodeServer( cl, item.Type, x, y, dir, item.Tier );
+
+			NodePlaced( To.Single( cl ) );
 		}
 
 		[ServerCmd]
-		static void PlaceItem( string type, int x, int y )
+		static void RotateNodeServer( int networkId )
 		{
-			Entity pawn = ConsoleSystem.Caller.Pawn;
-			(pawn as FestivePlayer).PlaceItemServer( type, x, y );
+			Client cl = ConsoleSystem.Caller;
+
+			if ( cl.Pawn is not FestivePlayer player )
+				return;
+
+			Log.Info( "rotating node " + networkId );
+			GridNode node = null;
+
+			foreach ( var a in player.ClientSleigh.Grid.Nodes )
+			{
+				if ( a.NetworkIdent == networkId )
+				{
+					node = a;
+					break;
+				}
+			}
+
+			if ( node != null )
+				node.Direction--;
+			else
+				Log.Warning( "Could not find node." );
+		}
+
+		public void RotateNode( GridNode node )
+		{
+			if ( node == null )
+				return;
+
+			RotateNodeServer( node.NetworkIdent );
 		}
 
 		public override void BuildInput( InputBuilder input )
@@ -166,46 +345,71 @@ namespace ChristmasGame
 
 			if( BuildMode )
 			{
-				if ( input.Pressed( InputButton.Attack2 ) || input.Pressed( InputButton.Reload ) )
+				if( GridHovered && ActiveItem != null )
 				{
-					RotateBuildLeft();
+					if ( input.Pressed( InputButton.Attack2 ) || input.Pressed( InputButton.Reload ) )
+					{
+						RotateBuildLeft();
 
-					Log.Info("rotation " + BuildRotation);
-					//if ( ++BuildRotation > 3 )
-					//	BuildRotation = 0;
-					
+						Log.Info( "rotation " + BuildRotation );
+						//if ( ++BuildRotation > 3 )
+						//	BuildRotation = 0;
+
+					}
+
+					if ( input.MouseWheel != 0 )
+					{
+						int delta = Math.Clamp( input.MouseWheel, -1, 1 );
+						if ( delta > 0 ) RotateBuildLeft(); else RotateBuildRight();
+
+						Log.Info( "rotation " + BuildRotation );
+					}
 				}
 
-				if ( input.MouseWheel != 0 )
-				{
-					int delta = Math.Clamp(input.MouseWheel, -1, 1);
-					if ( delta > 0 ) RotateBuildLeft(); else RotateBuildRight();
 
-					Log.Info( "rotation " + BuildRotation );
-				}
 
 				if ( input.Pressed( InputButton.Attack1 ) )
 				{
-					Log.Info( "place" );
-					PlaceNode( "conveyorbelt", BuildTileX, BuildTileY, BuildRotation );
+					GridNode hoveredNode = NodeTrace();
+
+					if(hoveredNode != null)
+						ClientSleigh.Grid.SelectedNode = hoveredNode;
+					else
+					{
+						ClientSleigh.Grid.SelectedNode = null;
+
+						if ( GridHovered && ActiveItem != null )
+						{
+							Log.Info( "place" );
+							Place( ActiveItem.Type, ActiveItem.Tier, BuildTileX, BuildTileY, BuildRotation );
+						}
+					}
+
+					UpdateHUD();
 				}
 
-				if ( input.Pressed( InputButton.Jump ) )
-				{
-					Log.Info( "place" );
-					PlaceNode( "boxer", BuildTileX, BuildTileY, BuildRotation );
-				}
+				//if ( input.Pressed( InputButton.Attack1 ) )
+				//{
+				//	Log.Info( "place" );
+				//	PlaceNode( "conveyorbelt", BuildTileX, BuildTileY, BuildRotation, 0 );
+				//}
 
-				if ( input.Pressed( InputButton.Use ) )
-				{
-					Log.Info( "place" );
-					PlaceNode( "factory", BuildTileX, BuildTileY, BuildRotation );
-				}
+				//if ( input.Pressed( InputButton.Jump ) )
+				//{
+				//	Log.Info( "place" );
+				//	PlaceNode( "boxer", BuildTileX, BuildTileY, BuildRotation, 0 );
+				//}
 
-				if ( input.Pressed( InputButton.Flashlight ) )
-				{
-					PlaceItem( "toy", 0, 0 );
-				}
+				//if ( input.Pressed( InputButton.Use ) )
+				//{
+				//	Log.Info( "place" );
+				//	PlaceNode( "factory", BuildTileX, BuildTileY, BuildRotation, 1 );
+				//}
+
+				//if ( input.Pressed( InputButton.Flashlight ) )
+				//{
+				//	PlaceItem( "toy", 0, 0 );
+				//}
 			}
 
 

@@ -1,0 +1,44 @@
+
+.context {
+    position: absolute;
+
+    height: 32px;
+
+    background-color: #101011;
+    border: 1px solid blue;
+    border-radius: 4px;
+
+    pointer-events: auto;
+
+    .button {
+        width: 28px;
+
+        flex-grow: 1;
+        flex-shrink: 0;
+
+        /*height: 100%;*/
+        margin: 2px;
+
+        background-color: #222222;
+        border-radius: 2px;
+
+        pointer-events: auto;
+
+        .icon {
+            margin: auto;
+
+            font-size: 22px;
+	        color: white;
+	        font-family: MaterialIcons;
+            padding: 3px;
+
+/*	        padding: 2px;*/
+	        pointer-events: none;
+	        background-color: #242424;
+        }
+
+        &.hover {
+            background-color: #161616;
+        }
+    }
+}

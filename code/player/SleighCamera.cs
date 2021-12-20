@@ -10,7 +10,7 @@ namespace ChristmasGame
 		{
 			//use client sleigh reference
 
-			Position = new Vector3(0.0f, 480.0f, 440.0f);
+			Position = new Vector3(-440.0f, 0.0f, 440.0f);
 
 			Vector3 Target = new Vector3(0.0f, 0.0f, 0.0f);
 			Rotation = Rotation.LookAt(Target - Position, Vector3.Up);

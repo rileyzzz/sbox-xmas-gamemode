@@ -20,7 +20,7 @@ namespace ChristmasGame
 	public struct NodeType
 	{
 		public string label { get; set; }
-		public string model { get; set; }
+		//public string model { get; set; }
 		public string type { get; set; }
 		public List<string> inputs { get; set; }
 		public List<string> outputs { get; set; }
@@ -30,12 +30,15 @@ namespace ChristmasGame
 	public struct NodeTier
 	{
 		public float rate { get; set; }
+		public string icon { get; set; }
+		public string model { get; set; }
 	}
 
 	public partial class ChristmasGame : Game
 	{
 		public static GridConfig Config;
 		public static Random rand;
+
 
 		[Net] List<Sleigh> ActiveSleighs { get; set; } = new();
 
@@ -85,6 +88,7 @@ namespace ChristmasGame
 
 			player.Respawn();
 
+			
 			//player.Parent = ActiveSleighs[0];
 		}
 

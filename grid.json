@@ -10,7 +10,7 @@
         "box": {
             "label": "Boxes",
             "models": [
-                "models/sbox_props/benches/old_bench.vmdl"
+                "models/items/box.vmdl"
             ]
         },
         "present": {
@@ -29,7 +29,6 @@
     "nodes": {
         "factory": {
             "label": "Toy Factory",
-            "model": "models/nodes/factory/tier1.vmdl",
             "type": "producer",
             "inputs": [],
             "outputs": [
@@ -37,16 +36,19 @@
             ],
             "tiers": [
                 {
-                    "rate": 1.5
+                    "rate": 1.5,
+                    "icon": "ui/item_thumbnails/factory_tier1.png",
+                    "model": "models/nodes/factory/tier1.vmdl"
                 },
                 {
-                    "rate": 1.0
+                    "rate": 1.0,
+                    "icon": "ui/item_thumbnails/factory_tier2.png",
+                    "model": "models/nodes/factory/tier2.vmdl"
                 }
             ]
         },
         "boxer": {
             "label": "Toy Boxer",
-            "model": "models/dev/playerstart_tint.vmdl",
             "type": "transformer",
             "inputs": [
                 "toy"
@@ -56,16 +58,19 @@
             ],
             "tiers": [
                 {
-                    "rate": 0.5
+                    "rate": 0.5,
+                    "icon": "ui/item_thumbnails/factory_tier1.png",
+                    "model": "models/dev/playerstart_tint.vmdl"
                 },
                 {
-                    "rate": 0.5
+                    "rate": 0.5,
+                    "icon": "ui/item_thumbnails/factory_tier1.png",
+                    "model": "models/dev/playerstart_tint.vmdl"
                 }
             ]
         },
         "wrapper": {
             "label": "Present Wrapper",
-            "model": "models/dev/playerstart_tint.vmdl",
             "type": "transformer",
             "inputs": [
                 "box"
@@ -75,16 +80,19 @@
             ],
             "tiers": [
                 {
-                    "rate": 0.5
+                    "rate": 0.5,
+                    "icon": "ui/item_thumbnails/factory_tier1.png",
+                    "model": "models/dev/playerstart_tint.vmdl"
                 },
                 {
-                    "rate": 2.0
+                    "rate": 2.0,
+                    "icon": "ui/item_thumbnails/factory_tier1.png",
+                    "model": "models/dev/playerstart_tint.vmdl"
                 }
             ]
         },
         "mine": {
             "label": "Coal Mine",
-            "model": "models/dev/playerstart_tint.vmdl",
             "type": "producer",
             "inputs": [],
             "outputs": [
@@ -92,20 +100,29 @@
             ],
             "tiers": [
                 {
-                    "rate": 0.5
+                    "rate": 0.5,
+                    "icon": "ui/item_thumbnails/factory_tier1.png",
+                    "model": "models/dev/playerstart_tint.vmdl"
                 },
                 {
-                    "rate": 2.0
+                    "rate": 2.0,
+                    "icon": "ui/item_thumbnails/factory_tier1.png",
+                    "model": "models/dev/playerstart_tint.vmdl"
                 }
             ]
         },
         "conveyorbelt": {
             "label": "Conveyor Belt",
-            "model": "models/nodes/conveyor.vmdl",
             "type": "conveyor",
             "inputs": [],
             "outputs": [],
-            "tiers": []
+            "tiers": [
+                {
+                    "rate": 0.0,
+                    "icon": "ui/item_thumbnails/conveyor.png",
+                    "model": "models/nodes/conveyor.vmdl"
+                }
+            ]
         }
     }
 }

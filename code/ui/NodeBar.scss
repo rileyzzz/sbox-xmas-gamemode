@@ -1,0 +1,56 @@
+
+.nodeBar {
+    position: absolute;
+    width: 100%;
+    height: 140px;
+    bottom: 0px;
+    background-color: #1b1a29a0;
+    backdrop-filter: blur(40px);
+    flex-direction: row;
+    pointer-events: none;
+
+    .itemButton {
+        width: 128px;
+        /*height: 100%;*/
+        /*padding: 8px;*/
+        margin: 8px;
+        /*pointer-events: visible;*/
+        pointer-events: auto;
+
+        .image {
+            /*margin: 8px;*/
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            background-repeat: no-repeat;
+            background-size: 128px;
+
+
+            .label {
+                width: 100%;
+                height: 28px;
+                margin: auto;
+
+                text-align: center;
+                font-family: Poppins;
+                font-size: 24px;
+                color: white;
+                text-shadow: 5px 5px 50px rgba( black, 0.8 );
+            }
+        }
+
+        border-radius: 8px;
+
+        &.hover {
+            background-color: #303493;
+        }
+
+        &.disabled {
+            background-color: #0a0a0a;
+        }
+
+        &.active {
+            border: 2px solid orange;
+        }
+    }
+}

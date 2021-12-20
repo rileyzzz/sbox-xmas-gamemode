@@ -1,0 +1,111 @@
+//=========================================================================================================================
+// Optional
+//=========================================================================================================================
+HEADER
+{
+	CompileTargets = ( IS_SM_50 && ( PC || VULKAN ) );
+	Description = "Screenspace hint shader.";
+
+	DevShader = true;
+}
+
+//=========================================================================================================================
+// Optional
+//=========================================================================================================================
+FEATURES
+{
+    #include "common/features.hlsl"
+}
+
+MODES
+{
+    VrForward();													// Indicates this shader will be used for main rendering
+    Depth( "vr_depth_only.vfx" ); 									// Shader that will be used for shadowing and depth prepass
+    ToolsVis( S_MODE_TOOLS_VIS ); 									// Ability to see in the editor
+    ToolsWireframe( "vr_tools_wireframe.vfx" ); 					// Allows for mat_wireframe to work
+	ToolsShadingComplexity( "vr_tools_shading_complexity.vfx" ); 	// Shows how expensive drawing is in debug view
+}
+
+//=========================================================================================================================
+COMMON
+{
+	#include "common/shared.hlsl"
+
+	#define S_TRANSLUCENT 1
+	#define BLEND_MODE_ALREADY_SET
+}
+
+//=========================================================================================================================
+
+struct VertexInput
+{
+	#include "common/vertexinput.hlsl"
+};
+
+//=========================================================================================================================
+
+struct PixelInput
+{
+	#include "common/pixelinput.hlsl"
+};
+
+//=========================================================================================================================
+
+VS
+{
+	#include "common/vertex.hlsl"
+	//
+	// Main
+	//
+	PixelInput MainVs( INSTANCED_SHADER_PARAMS( VS_INPUT i ) )
+	{
+		PixelInput o = ProcessVertex( i );
+		// Add your vertex manipulation functions here
+
+		return FinalizeVertex( o );
+	}
+}
+
+//=========================================================================================================================
+
+PS
+{
+	//#include "system.fxc"
+	#include "common.fxc"
+	//#include "math_general.fxc"
+	//#include "encoded_normals.fxc"
+
+
+	RenderState( DepthEnable, false );
+    RenderState( DepthWriteEnable, false );
+
+    //#include "common/pixel.hlsl"
+	//
+	// Main
+	//
+
+	float g_flUvScale < Default( 1.0 ); Range(0.01, 10.0); UiGroup("Material,10/10"); >;
+
+	CreateInputTexture2D( Texture, Srgb, 8, "", "", "Color", Default3( 1.0, 1.0, 1.0 ) );
+	CreateTexture2DInRegister( g_tColor, 0 ) < Channel( RGBA, None( Texture ), Srgb ); OutputFormat( RGBA8888 ); SrgbRead( true ); >;
+	TextureAttribute( RepresentativeTexture, g_tColor );
+
+	struct PS_OUTPUT
+	{
+		float4 vColor : SV_Target0;
+	};
+
+
+	PS_OUTPUT MainPs( PixelInput i )
+	{
+		PS_OUTPUT o;
+
+		float2 vScreenUv = g_flUvScale * CalculateViewportUvFromInvSize( i.vPositionSs.xy, g_vInvGBufferSize.xy );
+        o.vColor = Tex2D( g_tColor, vScreenUv );
+
+		//if(o.vColor.a < 0.3)
+			//discard;
+
+		return o;
+	}
+}

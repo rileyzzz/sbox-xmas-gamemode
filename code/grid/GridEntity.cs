@@ -13,14 +13,25 @@ namespace ChristmasGame
 		[Net] public int SizeX { get; set; }
 		[Net] public int SizeY { get; set; }
 
-		[Net] List<GridNode> Nodes { get; set; } = new();
+		[Net] public List<GridNode> Nodes { get; set; } = new();
 		//[Net] Dictionary<Tuple<int, int>, GridNode> Nodes { get; set; } = new();
-		[Net] List<GridItem> Items { get; set; } = new();
+		[Net] public List<GridItem> Items { get; set; } = new();
 
 		Model TileModel;
 		ModelEntity TileOverlay;
 
-		public Vector3 OverlayPosition => new Vector3( -SizeX / 2.0f * gridScale, -SizeY / 2.0f * gridScale, 10.0f );
+		public Vector3 OverlayPosition => new Vector3( -SizeX / 2.0f * gridScale, -SizeY / 2.0f * gridScale, 4.0f );
+
+		GridNode _selectedNode;
+		public GridNode SelectedNode
+		{
+			get => _selectedNode;
+			set
+			{
+				_selectedNode = value;
+				UpdateSelectedNode();
+			}
+		}
 
 		public GridEntity()
 		{
@@ -38,6 +49,17 @@ namespace ChristmasGame
 
 			CreateTileMesh();
 
+		}
+
+		public void UpdateSelectedNode()
+		{
+			foreach ( var node in Nodes )
+				node.SetMaterialOverride( "" );
+
+			if ( SelectedNode == null )
+				return;
+
+			SelectedNode.SetMaterialOverride( Material.Load( "materials/hint.vmat" ) );
 		}
 
 		public override void Simulate( Client cl )
@@ -148,7 +170,7 @@ namespace ChristmasGame
 			return items;
 		}
 
-		public bool PlaceNode<T>( string type, int x, int y, int direction = 0 ) where T : GridNode
+		public bool PlaceNode<T>( string type, int x, int y, int direction = 0, int tier = 0 ) where T : GridNode
 		{
 			Assert.True( IsServer );
 
@@ -159,7 +181,7 @@ namespace ChristmasGame
 
 			var node = Create<T>();
 			node.Parent = this;
-			node.SetType( type );
+			node.SetType( type, tier );
 
 			node.X = x;
 			node.Y = y;

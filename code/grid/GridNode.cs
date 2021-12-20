@@ -32,6 +32,11 @@ namespace ChristmasGame
 			set
 			{
 				_direction = value;
+				if ( _direction > 3 )
+					_direction = 0;
+				if ( _direction < 0 )
+					_direction = 3;
+
 				Rotation = new Angles( 0.0f, _direction * 90.0f, 0.0f ).ToRotation();
 			}
 		}
@@ -50,13 +55,21 @@ namespace ChristmasGame
 
 		}
 
-		public void SetType(string type, int tier = 1)
+		//[ServerCmd]
+		//public void Rotate()
+		//{
+		//	Assert.True( IsServer );
+		//	Direction++;
+		//}
+
+		public void SetType(string type, int tier = 0)
 		{
 			var typeData = ChristmasGame.Config.nodes[type];
 
 			Type = type;
 
-			SetModel( typeData.model );
+			//SetModel( typeData.model );
+
 			Behavior = GetBehavior( typeData.type );
 			inputs = typeData.inputs;
 			outputs = typeData.outputs;
@@ -65,7 +78,11 @@ namespace ChristmasGame
 			{
 				var tierData = typeData.tiers[tier];
 				rate = tierData.rate;
+				SetModel( tierData.model );
+				SetupPhysicsFromModel( PhysicsMotionType.Static );
 			}
+
+			Tags.Add( "festive_node" );
 		}
 
 		float lerp( float v0, float v1, float t )

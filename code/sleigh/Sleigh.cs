@@ -24,8 +24,8 @@ namespace ChristmasGame
 			{
 				Grid = Create<GridEntity>();
 				Grid.Parent = this;
-				Grid.SizeX = 12;
-				Grid.SizeY = 10;
+				Grid.SizeX = 10;
+				Grid.SizeY = 12;
 
 			}
 		}

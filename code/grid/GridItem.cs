@@ -53,6 +53,8 @@ namespace ChristmasGame
 			Model = Entity.Create<ModelEntity>();
 			Model.Parent = Grid;
 			Model.Transmit = TransmitType.Always;
+
+			Model.Rotation = Rotation.FromYaw( 180.0f );
 			
 
 			int targetModel = ChristmasGame.rand.Next( 0, typeData.models.Count );
