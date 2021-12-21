@@ -98,11 +98,13 @@ namespace ChristmasGame
 
 		}
 
+		
 		public override void Simulate( Client cl )
 		{
 			base.Simulate( cl );
 
-			if( IsServer )
+			
+			if( IsServer && cl.IsListenServerHost )
 			{
 				foreach ( var sleigh in ActiveSleighs )
 					sleigh.Simulate( cl );

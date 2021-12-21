@@ -15,7 +15,7 @@ namespace ChristmasGame
 
 		[Net] public List<GridNode> Nodes { get; set; } = new();
 		//[Net] Dictionary<Tuple<int, int>, GridNode> Nodes { get; set; } = new();
-		[Net] public List<GridItem> Items { get; set; } = new();
+		public List<GridItem> Items { get; set; } = new();
 
 		Model TileModel;
 		ModelEntity TileOverlay;

@@ -84,7 +84,8 @@ PS
 	//#include "encoded_normals.fxc"
 
 	RenderState( DepthEnable, F_DISABLE_DEPTH ? false : true );
-    RenderState( DepthWriteEnable, F_DISABLE_DEPTH ? false : true );
+    // RenderState( DepthWriteEnable, F_DISABLE_DEPTH ? false : true );
+    RenderState( DepthWriteEnable, true );
 
 	// RenderState( DepthEnable, false );
     // RenderState( DepthWriteEnable, false );
@@ -118,6 +119,7 @@ PS
 	struct PS_OUTPUT
 	{
 		float4 vColor : SV_Target0;
+		float depth : SV_Depth;
 	};
 
 
@@ -127,7 +129,8 @@ PS
 
 		float2 vScreenUv = g_flUvScale * CalculateViewportUvFromInvSize( i.vPositionSs.xy, g_vInvGBufferSize.xy );
         o.vColor = Tex2D( g_tColor, vScreenUv );
-
+		o.depth = 0.0;
+		
 		//if(o.vColor.a < 0.3)
 			//discard;
 

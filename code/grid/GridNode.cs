@@ -85,6 +85,10 @@ namespace ChristmasGame
 				rate = tierData.rate;
 				SetModel( tierData.model );
 				SetupPhysicsFromModel( PhysicsMotionType.Static );
+				//CollisionGroup = CollisionGroup.Trigger;
+				ClearCollisionLayers();
+				AddCollisionLayer( CollisionLayer.Hitbox );
+				//RemoveCollisionLayer( CollisionLayer.Player );
 			}
 		}
 
@@ -119,7 +123,7 @@ namespace ChristmasGame
 			List<GridItem> items = grid.GetItemsInTile( X, Y );
 			List<GridItem> pendingTransform = new();
 
-			const float moveSpeed = 0.05f;
+			const float moveSpeed = 2.0f;
 
 			foreach( var item in items )
 			{
@@ -130,7 +134,7 @@ namespace ChristmasGame
 				//only move inputs to the center
 				if ( !inputs.Contains( item.Type ) || Vector2.GetDot( relativePosition, direction ) < 0 )
 				{
-					var targetPos = item.Pos + direction * moveSpeed;
+					var targetPos = item.Pos + direction * moveSpeed * Time.Delta;
 					if ( direction.x == 0.0f ) targetPos.x = lerp( targetPos.x, X + 0.5f, 0.3f );
 					if ( direction.y == 0.0f ) targetPos.y = lerp( targetPos.y, Y + 0.5f, 0.3f );
 
@@ -143,34 +147,39 @@ namespace ChristmasGame
 				//Log.Info( "moving item to " + targetPos.ToString() + " client " + IsClient );
 			}
 
-			if(pendingTransform.Count > maxItems)
-			{
-				Log.Info("item count exceeded");
-				for ( int i = maxItems; i < pendingTransform.Count; i++ )
-					grid.DeleteItem( pendingTransform[i] );
-			}
+			//Log.Info("is client " + IsClient);
 
-			accum += Time.Delta;
-			if( accum > rate )
+			if( IsServer )
 			{
-				switch( Behavior )
+				if ( pendingTransform.Count > maxItems )
 				{
-				case NodeBehavior.Transformer:
-					if( outputs.Count > 0 && pendingTransform.Count > 0 )
+					Log.Info( "item count exceeded" );
+					for ( int i = maxItems; i < pendingTransform.Count; i++ )
+						grid.DeleteItem( pendingTransform[i] );
+				}
+
+				accum += Time.Delta;
+				if ( accum > rate )
+				{
+					switch ( Behavior )
 					{
-						accum = 0.0f;
-						Log.Info("item transform");
-						pendingTransform[0].SetType( outputs[0] );
+						case NodeBehavior.Transformer:
+							if ( outputs.Count > 0 && pendingTransform.Count > 0 )
+							{
+								accum = 0.0f;
+								Log.Info( "item transform" );
+								pendingTransform[0].SetType( outputs[0] );
+							}
+							break;
+						case NodeBehavior.Producer:
+							if ( outputs.Count > 0 )
+							{
+								accum = 0.0f;
+								Log.Info( "produce item" );
+								grid.PlaceItem( outputs[0], X, Y );
+							}
+							break;
 					}
-					break;
-				case NodeBehavior.Producer:
-					if( outputs.Count > 0 )
-					{
-						accum = 0.0f;
-						Log.Info("produce item");
-						grid.PlaceItem( outputs[0], X, Y );
-					}
-					break;
 				}
 			}
 		}

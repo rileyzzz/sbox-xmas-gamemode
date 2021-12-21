@@ -37,6 +37,7 @@ namespace ChristmasGame
 		int BuildTileY = 0;
 		
 		ModelEntity BuildHint;
+		ModelEntity BuildHintArrow;
 
 		InventoryItem _activeItem;
 		public InventoryItem ActiveItem
@@ -122,6 +123,7 @@ namespace ChristmasGame
 						UpdateHintLocation();
 
 					BuildHint.EnableDrawing = GridHovered;
+					BuildHintArrow.EnableDrawing = GridHovered;
 				}
 			}
 
@@ -130,7 +132,7 @@ namespace ChristmasGame
 		GridNode NodeTrace()
 		{
 			Ray tr = new Ray( Input.Cursor.Origin, Input.Cursor.Direction );
-			var result = Trace.Ray( tr, 1000.0f ).WithAllTags( "festive_node" ).Run();
+			var result = Trace.Ray( tr, 1000.0f ).HitLayer(CollisionLayer.Hitbox, true).WithAllTags( "festive_node" ).Run();
 
 			if ( result.Hit && result.Entity is GridNode node )
 				return node;
@@ -174,11 +176,13 @@ namespace ChristmasGame
 
 		void UpdateHintModel()
 		{
-			if ( BuildHint == null )
+			if ( BuildHint == null || BuildHintArrow == null )
 				return;
 
 			BuildHint.SetModel( ActiveItem != null ? ChristmasGame.Config.nodes[ActiveItem.Type].tiers[ActiveItem.Tier].model : "" );
 			BuildHint.SetMaterialOverride( Material.Load( "materials/hint.vmat" ) );
+
+			BuildHintArrow.EnableDrawing = ActiveItem != null;
 		}
 
 		public void ToggleBuildMode()
@@ -190,6 +194,11 @@ namespace ChristmasGame
 				Log.Info("Entering build mode.");
 
 				BuildHint = Create<ModelEntity>();
+
+				BuildHintArrow = Create<ModelEntity>();
+				BuildHintArrow.Parent = BuildHint;
+				BuildHintArrow.SetModel( "models/hint_arrow.vmdl" );
+
 				//BuildHint.SetModel( "models/props/cs_office/chair_office.vmdl" );
 				UpdateHintModel();
 			}
@@ -197,8 +206,13 @@ namespace ChristmasGame
 			{
 				Log.Info("Exiting build mode.");
 
+				BuildHintArrow.Delete();
+				BuildHintArrow = null;
+
 				BuildHint.Delete();
 				BuildHint = null;
+
+				ClientSleigh.Grid.SelectedNode = null;
 			}
 
 			ClientSleigh.Grid.SetTileOverlayVisible( BuildMode );
