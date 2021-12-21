@@ -15,6 +15,8 @@ HEADER
 FEATURES
 {
     #include "common/features.hlsl"
+
+	Feature( F_DISABLE_DEPTH, 0..1, "Disable Depth" );
 }
 
 MODES
@@ -33,6 +35,8 @@ COMMON
 
 	#define S_TRANSLUCENT 1
 	#define BLEND_MODE_ALREADY_SET
+	#define DEPTH_STATE_ALREADY_SET
+	#define STENCIL_ALREADY_SET
 }
 
 //=========================================================================================================================
@@ -70,14 +74,35 @@ VS
 
 PS
 {
-	//#include "system.fxc"
-	#include "common.fxc"
+
+	//#include "common.fxc"
+
+	//#include "vr_shared_standard_ps_code.fxc"
+	//#include "common/pixel.hlsl"
+
 	//#include "math_general.fxc"
 	//#include "encoded_normals.fxc"
 
+	RenderState( DepthEnable, F_DISABLE_DEPTH ? false : true );
+    RenderState( DepthWriteEnable, F_DISABLE_DEPTH ? false : true );
 
-	RenderState( DepthEnable, false );
-    RenderState( DepthWriteEnable, false );
+	// RenderState( DepthEnable, false );
+    // RenderState( DepthWriteEnable, false );
+
+//     RenderState( StencilEnable, true );
+
+// #if (F_STENCIL_TOP)
+// 	RenderState( StencilFunc, NOT_EQUAL );
+// 	RenderState( StencilReadMask, 0xFF );
+// 	RenderState( StencilWriteMask, 0x00 );
+// #else // !F_STENCIL_TOP
+//     RenderState( StencilFunc, ALWAYS );
+//     RenderState( StencilPassOp, REPLACE );
+//     RenderState( StencilWriteMask, 0xFF );
+//     RenderState( StencilReadMask, 0x00 );
+// #endif // !F_STENCIL_TOP
+
+// 	RenderState( StencilRef, 5 );
 
     //#include "common/pixel.hlsl"
 	//

@@ -15,7 +15,28 @@ namespace ChristmasGame
 
 	public partial class GridNode : ModelEntity
 	{
-		public string Type;
+		string _type;
+
+		public string Type
+		{
+			get => _type;
+			set
+			{
+				_type = value;
+				Update();
+			}
+		}
+
+		int _tier = 0;
+		public int Tier
+		{
+			get => _tier;
+			set
+			{
+				_tier = value;
+				Update();
+			}
+		}
 
 		NodeBehavior Behavior;
 		List<string> inputs;
@@ -45,14 +66,26 @@ namespace ChristmasGame
 
 		const int maxItems = 10;
 
-
 		public GridNode()
 		{
+			Tags.Add( "festive_node" );
 		}
 
-		public void Update()
+		void Update()
 		{
+			var typeData = ChristmasGame.Config.nodes[Type];
+			Behavior = GetBehavior( typeData.type );
 
+			inputs = typeData.inputs;
+			outputs = typeData.outputs;
+
+			if ( Tier < typeData.tiers.Count )
+			{
+				var tierData = typeData.tiers[Tier];
+				rate = tierData.rate;
+				SetModel( tierData.model );
+				SetupPhysicsFromModel( PhysicsMotionType.Static );
+			}
 		}
 
 		//[ServerCmd]
@@ -62,27 +95,15 @@ namespace ChristmasGame
 		//	Direction++;
 		//}
 
+		public void UpdateTypeTier()
+		{
+
+		}
+
 		public void SetType(string type, int tier = 0)
 		{
-			var typeData = ChristmasGame.Config.nodes[type];
-
 			Type = type;
-
-			//SetModel( typeData.model );
-
-			Behavior = GetBehavior( typeData.type );
-			inputs = typeData.inputs;
-			outputs = typeData.outputs;
-
-			if(tier < typeData.tiers.Count)
-			{
-				var tierData = typeData.tiers[tier];
-				rate = tierData.rate;
-				SetModel( tierData.model );
-				SetupPhysicsFromModel( PhysicsMotionType.Static );
-			}
-
-			Tags.Add( "festive_node" );
+			Tier = tier;
 		}
 
 		float lerp( float v0, float v1, float t )

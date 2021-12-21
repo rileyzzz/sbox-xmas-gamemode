@@ -30,21 +30,17 @@ namespace ChristmasGame
 
 		public void Update()
 		{
-			Log.Info( "updating list" );
 			DeleteChildren();
 			ItemButtons.Clear();
 
 			if ( Local.Pawn is not FestivePlayer player )
 				return;
 
-			Log.Info( "pawn exists" );
-
 			List<InventoryItem> availableItems = new();
 			List<InventoryItem> purchaseItems = new();
 
 			foreach( var item in player.NodeInventory )
 			{
-				Log.Info("ui item");
 				if ( item.Count > 0 )
 					availableItems.Add( item );
 				else if ( item.Tier == 0 )
@@ -128,15 +124,16 @@ namespace ChristmasGame
 			if ( Local.Pawn is not FestivePlayer player )
 				return;
 
-			if ( Item.Count > 0 )
-			{
-				Log.Info("update active");
+			if ( player.ActiveItem == Item )
+				player.ActiveItem = null;
+			else if( Item.Count > 0 )
 				player.ActiveItem = Item;
-				(Parent as NodeBar).UpdateActive();
-			}
+
+			(Parent as NodeBar).UpdateActive();
 
 			e.StopPropagation();
 		}
+
 		//protected override void OnMouseDown( MousePanelEvent e )
 		//{
 		//	base.OnMouseDown( e );

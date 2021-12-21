@@ -20,6 +20,8 @@ namespace ChristmasGame
 		Model TileModel;
 		ModelEntity TileOverlay;
 
+		public ModelEntity HintArrow;
+
 		public Vector3 OverlayPosition => new Vector3( -SizeX / 2.0f * gridScale, -SizeY / 2.0f * gridScale, 4.0f );
 
 		GridNode _selectedNode;
@@ -49,6 +51,14 @@ namespace ChristmasGame
 
 			CreateTileMesh();
 
+			if ( IsClient )
+			{
+				HintArrow = Create<ModelEntity>();
+				HintArrow.Parent = this;
+
+				HintArrow.SetModel( "models/hint_arrow.vmdl" );
+				HintArrow.EnableDrawing = false;
+			}
 		}
 
 		public void UpdateSelectedNode()
@@ -56,10 +66,16 @@ namespace ChristmasGame
 			foreach ( var node in Nodes )
 				node.SetMaterialOverride( "" );
 
+			HintArrow.Parent = null;
+			HintArrow.EnableDrawing = SelectedNode != null;
+
 			if ( SelectedNode == null )
 				return;
 
 			SelectedNode.SetMaterialOverride( Material.Load( "materials/hint.vmat" ) );
+			HintArrow.Position = SelectedNode.Position;
+			HintArrow.Rotation = SelectedNode.Rotation;
+			HintArrow.Parent = SelectedNode;
 		}
 
 		public override void Simulate( Client cl )
@@ -197,6 +213,13 @@ namespace ChristmasGame
 			return true;
 		}
 
+		public void DeleteNode( GridNode node )
+		{
+			Assert.True( IsServer );
+			node.Delete();
+			Nodes.Remove(node);
+		}
+
 		public void PlaceItem( string type, int x, int y )
 		{
 			Assert.True( IsServer );
@@ -210,11 +233,11 @@ namespace ChristmasGame
 			Items.Add( item );
 		}
 
-		public void UpdateNodes()
-		{
-			foreach ( var node in Nodes )
-				node.Update();
-		}
+		//public void UpdateNodes()
+		//{
+		//	foreach ( var node in Nodes )
+		//		node.Update();
+		//}
 
 		public Vector3 GridToLocal(Vector2 pos)
 		{

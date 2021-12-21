@@ -64,6 +64,9 @@ namespace ChristmasGame
 						var item = new InventoryItem( type.Key, i );
 						if ( i == 0 && type.Key == "factory" )
 							item.Count = 1;
+						if ( i == 0 && type.Key == "conveyorbelt" )
+							item.Count = 999;
+
 						NodeInventory.Add( item );
 					}
 
@@ -263,9 +266,8 @@ namespace ChristmasGame
 			if ( player.ActiveItem != null && player.ActiveItem.Count == 0 )
 				player.ActiveItem = null;
 
-			UpdateHUD();
-
 			player.ClientSleigh.Grid.SelectedNode = null;
+			UpdateHUD();
 		}
 
 		[ServerCmd]
@@ -334,6 +336,63 @@ namespace ChristmasGame
 				return;
 
 			RotateNodeServer( node.NetworkIdent );
+		}
+
+		[ClientRpc]
+		public static void NodeRemoved()
+		{
+			if ( Local.Pawn is not FestivePlayer player )
+				return;
+
+			player.ClientSleigh.Grid.SelectedNode = null;
+			UpdateHUD();
+		}
+
+		[ServerCmd]
+		static void RemoveNodeServer( int networkId )
+		{
+			Client cl = ConsoleSystem.Caller;
+
+			if ( cl.Pawn is not FestivePlayer player )
+				return;
+
+			Log.Info( "removing node " + networkId );
+			GridNode node = null;
+
+			foreach ( var a in player.ClientSleigh.Grid.Nodes )
+			{
+				if ( a.NetworkIdent == networkId )
+				{
+					node = a;
+					break;
+				}
+			}
+
+			if ( node != null )
+			{
+				foreach( var item in player.NodeInventory )
+				{
+					if(item.Type == node.Type && item.Tier == node.Tier)
+					{
+						item.Count++;
+						break;
+					}
+				}
+
+				player.ClientSleigh.Grid.DeleteNode( node );
+			}
+			else
+				Log.Warning( "Could not find node." );
+
+			NodeRemoved( To.Single( cl ) );
+		}
+
+		public void RemoveNode( GridNode node )
+		{
+			if ( node == null )
+				return;
+
+			RemoveNodeServer( node.NetworkIdent );
 		}
 
 		public override void BuildInput( InputBuilder input )

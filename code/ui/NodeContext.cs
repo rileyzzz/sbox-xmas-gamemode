@@ -58,14 +58,10 @@ namespace ChristmasGame
 
 		void Rotate()
 		{
-			if ( Node == null )
+			if ( Node == null || Local.Pawn is not FestivePlayer player )
 				return;
 
 			Log.Info( "rotate" );
-			//Node.Rotate();
-
-			if ( Local.Pawn is not FestivePlayer player )
-				return;
 
 			//player.ClientSleigh.Grid.RotateNode( Node );
 			player.RotateNode( Node );
@@ -78,7 +74,12 @@ namespace ChristmasGame
 
 		void Remove()
 		{
+			if ( Node == null || Local.Pawn is not FestivePlayer player )
+				return;
+
 			Log.Info( "remove" );
+
+			player.RemoveNode( Node );
 		}
 	}
 
