@@ -17,7 +17,7 @@ namespace ChristmasGame
 		{
 			base.Spawn();
 
-			SetModel( "models/test_sleigh.vmdl" );
+			SetModel( "models/sleigh.vmdl" );
 			SetupPhysicsFromModel( PhysicsMotionType.Static );
 
 			if(IsServer)
@@ -27,6 +27,15 @@ namespace ChristmasGame
 				Grid.SizeX = 10;
 				Grid.SizeY = 12;
 
+				Grid.PlaceNode<EngineNode>( "engine", 0, 10, 2, 0 );
+				Grid.PlaceNode<EngineNode>( "engine", 0, 7, 2, 0 );
+				Grid.PlaceNode<EngineNode>( "engine", 0, 4, 2, 0 );
+				Grid.PlaceNode<EngineNode>( "engine", 0, 1, 2, 0 );
+
+				Grid.PlaceNode<CannonNode>( "cannon", 9, 10, 0, 0 );
+				Grid.PlaceNode<CannonNode>( "cannon", 9, 7, 0, 0 );
+				Grid.PlaceNode<CannonNode>( "cannon", 9, 4, 0, 0 );
+				Grid.PlaceNode<CannonNode>( "cannon", 9, 1, 0, 0 );
 			}
 		}
 

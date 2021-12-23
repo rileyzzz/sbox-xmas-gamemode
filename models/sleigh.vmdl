@@ -1,0 +1,107 @@
+<!-- kv3 encoding:text:version{e21c7f3c-8a33-41c5-9977-a76d3a32aa0d} format:modeldoc29:version{3cec427c-1b0e-4d48-a90a-0436f33a6041} -->
+{
+	rootNode = 
+	{
+		_class = "RootNode"
+		children = 
+		[
+			{
+				_class = "MaterialGroupList"
+				children = 
+				[
+					{
+						_class = "DefaultMaterialGroup"
+						remaps = 
+						[
+							{
+								from = "sleigh.vmat"
+								to = "materials/sleigh/sleigh.vmat"
+							},
+						]
+						use_global_default = false
+						global_default_material = ""
+					},
+				]
+			},
+			{
+				_class = "PhysicsShapeList"
+				children = 
+				[
+					{
+						_class = "PhysicsShapeBox"
+						parent_bone = ""
+						surface_prop = "default"
+						collision_prop = "default"
+						origin = [ 0.0, 0.0, 0.0 ]
+						angles = [ 0.0, 0.0, 0.0 ]
+						dimensions = [ 450.0, 600.0, 2.0 ]
+					},
+					{
+						_class = "PhysicsShapeBox"
+						parent_bone = ""
+						surface_prop = "default"
+						collision_prop = "default"
+						origin = [ -221.822647, 0.0, 42.530861 ]
+						angles = [ 0.0, 0.0, 0.0 ]
+						dimensions = [ 6.354706, 600.0, 87.061722 ]
+					},
+					{
+						_class = "PhysicsShapeBox"
+						parent_bone = ""
+						surface_prop = "default"
+						collision_prop = "default"
+						origin = [ 221.822998, 0.0, 42.530899 ]
+						angles = [ 0.0, 0.0, 0.0 ]
+						dimensions = [ 6.354706, 600.0, 87.061722 ]
+					},
+					{
+						_class = "PhysicsShapeBox"
+						parent_bone = ""
+						surface_prop = "default"
+						collision_prop = "default"
+						origin = [ 0.0, 296.223389, 42.345024 ]
+						angles = [ 0.0, 0.0, 0.0 ]
+						dimensions = [ 450.0, 7.55304, 86.690048 ]
+					},
+					{
+						_class = "PhysicsShapeBox"
+						parent_bone = ""
+						surface_prop = "default"
+						collision_prop = "default"
+						origin = [ 0.0, -296.222992, 42.345001 ]
+						angles = [ 0.0, 0.0, 0.0 ]
+						dimensions = [ 450.0, 7.55304, 86.690048 ]
+					},
+				]
+			},
+			{
+				_class = "RenderMeshList"
+				children = 
+				[
+					{
+						_class = "RenderMeshFile"
+						filename = "models/sleigh.fbx"
+						import_translation = [ 0.0, 0.0, 0.0 ]
+						import_rotation = [ 0.0, 180.0, 0.0 ]
+						import_scale = 0.5
+						align_origin_x_type = "None"
+						align_origin_y_type = "None"
+						align_origin_z_type = "None"
+						parent_bone = ""
+						import_filter = 
+						{
+							exclude_by_default = false
+							exception_list = 
+							[
+								"Plane",
+							]
+						}
+					},
+				]
+			},
+		]
+		model_archetype = ""
+		primary_associated_entity = ""
+		anim_graph_name = ""
+	}
+}

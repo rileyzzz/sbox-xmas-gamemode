@@ -17,12 +17,16 @@ namespace ChristmasGame
 		//[Net] Dictionary<Tuple<int, int>, GridNode> Nodes { get; set; } = new();
 		public List<GridItem> Items { get; set; } = new();
 
-		Model TileModel;
+		Model OverlayModel;
+		Model FloorModel;
+
 		ModelEntity TileOverlay;
+		public ModelEntity Floor;
 
 		public ModelEntity HintArrow;
 
-		public Vector3 OverlayPosition => new Vector3( -SizeX / 2.0f * gridScale, -SizeY / 2.0f * gridScale, 4.0f );
+		public Vector3 FloorPosition => new Vector3( -SizeX / 2.0f * gridScale, -SizeY / 2.0f * gridScale, 0.0f );
+		public Vector3 OverlayPosition => FloorPosition + new Vector3( 0.0f, 0.0f, 4.0f );
 
 		GridNode _selectedNode;
 		public GridNode SelectedNode
@@ -58,6 +62,11 @@ namespace ChristmasGame
 
 				HintArrow.SetModel( "models/hint_arrow.vmdl" );
 				HintArrow.EnableDrawing = false;
+
+				Floor = Create<ModelEntity>();
+				Floor.Parent = this;
+				Floor.Position = FloorPosition;
+				Floor.SetModel( FloorModel );
 			}
 		}
 
@@ -110,8 +119,11 @@ namespace ChristmasGame
 			Assert.True( IsClient );
 
 			Material tileMaterial = Material.Load( "materials/tile.vmat" );
+			//Material floorMaterial = Material.Load( "materials/crane_floor_a.vmat" );
+			Material floorMaterial = Material.Load( "materials/generic/wall_brick_older.vmat" );
 
-			Mesh tileMesh = new Mesh( tileMaterial );
+			Mesh floorMesh = new Mesh( floorMaterial );
+			Mesh overlayMesh = new Mesh( tileMaterial );
 
 			Vector3[] points =
 			{
@@ -129,13 +141,27 @@ namespace ChristmasGame
 				new Vertex( points[3], Vector3.Up, Vector3.Right, new Vector2(SizeX, SizeY) ),
 			};
 
-			VertexBuffer vb = new VertexBuffer();
-			vb.AddQuad( vertices[0], vertices[1], vertices[2], vertices[3] );
+			const float floorScale = 0.25f;
 
-			tileMesh.CreateBuffers( vb );
+			Vertex[] floor_vertices =
+{
+				new Vertex( points[0], Vector3.Up, Vector3.Right, new Vector2(SizeX * floorScale, 0) ),
+				new Vertex( points[1], Vector3.Up, Vector3.Right, new Vector2(0, 0) ),
+				new Vertex( points[2], Vector3.Up, Vector3.Right, new Vector2(0, SizeY * floorScale) ),
+				new Vertex( points[3], Vector3.Up, Vector3.Right, new Vector2(SizeX * floorScale, SizeY * floorScale) ),
+			};
 
-			TileModel = Model.Builder.AddMesh( tileMesh ).Create(); //.AddCollisionHull(points)
+			VertexBuffer floor_vb = new VertexBuffer();
+			VertexBuffer overlay_vb = new VertexBuffer();
 
+			floor_vb.AddQuad( floor_vertices[0], floor_vertices[1], floor_vertices[2], floor_vertices[3] );
+			overlay_vb.AddQuad( vertices[0], vertices[1], vertices[2], vertices[3] );
+
+			floorMesh.CreateBuffers( floor_vb );
+			overlayMesh.CreateBuffers( overlay_vb );
+
+			FloorModel = Model.Builder.AddMesh( floorMesh ).Create(); //.AddCollisionHull(points)
+			OverlayModel = Model.Builder.AddMesh( overlayMesh ).Create(); //.AddCollisionHull(points)
 		}
 
 		public void SetTileOverlayVisible( bool visible )
@@ -149,7 +175,7 @@ namespace ChristmasGame
 				TileOverlay = Create<ModelEntity>();
 				TileOverlay.Parent = this;
 				TileOverlay.Position = OverlayPosition;
-				TileOverlay.SetModel( TileModel );
+				TileOverlay.SetModel( OverlayModel );
 			}
 			else
 			{
@@ -246,19 +272,19 @@ namespace ChristmasGame
 
 		public Vector3 GridToWorld(Vector2 pos)
 		{
-			Transform worldTransform = Parent.Transform.ToWorld( new Transform( OverlayPosition ) );
+			Transform worldTransform = Parent.Transform.ToWorld( new Transform( FloorPosition ) );
 			return worldTransform.PointToWorld( new Vector3( pos.x, pos.y, 0.0f ) * gridScale );
 		}
 
 		public Vector2 WorldToGrid(Vector3 pos)
 		{
-			Transform worldTransform = Parent.Transform.ToWorld( new Transform( OverlayPosition ) );
+			Transform worldTransform = Parent.Transform.ToWorld( new Transform( FloorPosition ) );
 			return worldTransform.PointToLocal( pos ) / gridScale;
 		}
 
 		public bool RayTest( Ray ray, ref int hitX, ref int hitY, ref Vector3 worldPos )
 		{
-			Transform worldTransform = Parent.Transform.ToWorld( new Transform( OverlayPosition ) );
+			Transform worldTransform = Parent.Transform.ToWorld( new Transform( FloorPosition ) );
 			Plane gridPlane = new Plane( worldTransform.Position, Vector3.Up );
 			Vector3? hit = gridPlane.Trace(ray);
 

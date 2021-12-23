@@ -1,13 +1,15 @@
 
 .nodeBar {
     position: absolute;
-    width: 100%;
+    width: 90%;
     height: 140px;
     bottom: 0px;
     background-color: #1b1a29a0;
     backdrop-filter: blur(40px);
     flex-direction: row;
     pointer-events: none;
+
+    border-radius: 0px 8px 0px 0px;
 
     .itemButton {
         width: 128px;

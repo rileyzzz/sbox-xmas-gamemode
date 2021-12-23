@@ -21,11 +21,18 @@ namespace ChristmasGame
 	{
 		NodeBar bar;
 		NodeContext context;
+		PresentMeter meter;
+
 
 		public ChristmasHUD()
 		{
 			bar = AddChild<NodeBar>( "nodeBar" );
 			context = AddChild<NodeContext>( "context" );
+			meter = AddChild<PresentMeter>( "meterContainer" );
+
+			//meter.Presents = 0;
+			//meter.MaxPresents = 100;
+
 		}
 
 		public void Update()
@@ -37,5 +44,23 @@ namespace ChristmasGame
 				context.Node = player.ClientSleigh.Grid.SelectedNode;
 			}
 		}
+
+		//float test = 0.0f;
+		//bool parity = false;
+		//public override void Tick()
+		//{
+		//	base.Tick();
+
+		//	test += Time.Delta;
+
+		//	if ( test > 2.0f )
+		//	{
+		//		Log.Info( "alternate" );
+		//		parity = !parity;
+		//		test = 0.0f;
+
+		//		meter.Presents = parity ? 80 : 10;
+		//	}
+		//}
 	}
 }

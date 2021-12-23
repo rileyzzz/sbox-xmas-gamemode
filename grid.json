@@ -16,7 +16,7 @@
         "present": {
             "label": "Presents",
             "models": [
-                "models/sbox_props/benches/old_bench.vmdl"
+                "models/items/present.vmdl"
             ]
         },
         "coal": {
@@ -58,14 +58,19 @@
             ],
             "tiers": [
                 {
-                    "rate": 0.5,
-                    "icon": "ui/item_thumbnails/factory_tier1.png",
-                    "model": "models/dev/playerstart_tint.vmdl"
+                    "rate": 1.5,
+                    "icon": "ui/item_thumbnails/boxer_tier1.png",
+                    "model": "models/nodes/boxer/tier1.vmdl"
+                },
+                {
+                    "rate": 1.0,
+                    "icon": "ui/item_thumbnails/boxer_tier2.png",
+                    "model": "models/nodes/boxer/tier2.vmdl"
                 },
                 {
                     "rate": 0.5,
-                    "icon": "ui/item_thumbnails/factory_tier1.png",
-                    "model": "models/dev/playerstart_tint.vmdl"
+                    "icon": "ui/item_thumbnails/boxer_tier3.png",
+                    "model": "models/nodes/boxer/tier3.vmdl"
                 }
             ]
         },
@@ -80,14 +85,19 @@
             ],
             "tiers": [
                 {
-                    "rate": 0.5,
-                    "icon": "ui/item_thumbnails/factory_tier1.png",
-                    "model": "models/dev/playerstart_tint.vmdl"
+                    "rate": 1.5,
+                    "icon": "ui/item_thumbnails/wrapper_tier1.png",
+                    "model": "models/nodes/wrapper/tier1.vmdl"
                 },
                 {
-                    "rate": 2.0,
-                    "icon": "ui/item_thumbnails/factory_tier1.png",
-                    "model": "models/dev/playerstart_tint.vmdl"
+                    "rate": 1.0,
+                    "icon": "ui/item_thumbnails/wrapper_tier2.png",
+                    "model": "models/nodes/wrapper/tier2.vmdl"
+                },
+                {
+                    "rate": 0.5,
+                    "icon": "ui/item_thumbnails/wrapper_tier3.png",
+                    "model": "models/nodes/wrapper/tier3.vmdl"
                 }
             ]
         },
@@ -101,13 +111,8 @@
             "tiers": [
                 {
                     "rate": 0.5,
-                    "icon": "ui/item_thumbnails/factory_tier1.png",
-                    "model": "models/dev/playerstart_tint.vmdl"
-                },
-                {
-                    "rate": 2.0,
-                    "icon": "ui/item_thumbnails/factory_tier1.png",
-                    "model": "models/dev/playerstart_tint.vmdl"
+                    "icon": "ui/item_thumbnails/mine_tier1.png",
+                    "model": "models/nodes/mine/mine.vmdl"
                 }
             ]
         },
@@ -121,6 +126,36 @@
                     "rate": 0.0,
                     "icon": "ui/item_thumbnails/conveyor.png",
                     "model": "models/nodes/conveyor.vmdl"
+                }
+            ]
+        },
+        "cannon": {
+            "label": "Cannon",
+            "type": "consumer",
+            "inputs": [
+                "present"
+            ],
+            "outputs": [],
+            "tiers": [
+                {
+                    "rate": 0.0,
+                    "icon": "ui/item_thumbnails/conveyor.png",
+                    "model": "models/nodes/cannon.vmdl"
+                }
+            ]
+        },
+        "engine": {
+            "label": "Engine",
+            "type": "consumer",
+            "inputs": [
+                "coal"
+            ],
+            "outputs": [],
+            "tiers": [
+                {
+                    "rate": 0.0,
+                    "icon": "ui/item_thumbnails/conveyor.png",
+                    "model": "models/nodes/factory/tier2.vmdl"
                 }
             ]
         }

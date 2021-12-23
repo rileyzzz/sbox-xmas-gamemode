@@ -50,7 +50,7 @@ namespace ChristmasGame
 			}
 		}
 
-		[Net] public IList<InventoryItem> NodeInventory { get; set; };
+		[Net] public IList<InventoryItem> NodeInventory { get; set; }
 
 		public FestivePlayer()
 		{
@@ -63,8 +63,14 @@ namespace ChristmasGame
 					for( int i = 0; i < type.Value.tiers.Count; i++ )
 					{
 						var item = new InventoryItem( type.Key, i );
-						if ( i == 0 && type.Key == "factory" )
-							item.Count = 1;
+						//if ( type.Key == "factory" )
+						//	item.Count = 1;
+						//if ( type.Key == "boxer" )
+						//	item.Count = 1;
+						//if ( type.Key == "wrapper" )
+						//	item.Count = 1;
+						item.Count = 1;
+
 						if ( i == 0 && type.Key == "conveyorbelt" )
 							item.Count = 999;
 
@@ -446,7 +452,9 @@ namespace ChristmasGame
 					GridNode hoveredNode = NodeTrace();
 
 					if(hoveredNode != null)
-						ClientSleigh.Grid.SelectedNode = hoveredNode;
+					{
+						ClientSleigh.Grid.SelectedNode = hoveredNode.Behavior != NodeBehavior.Consumer ? hoveredNode : null;
+					}
 					else
 					{
 						ClientSleigh.Grid.SelectedNode = null;

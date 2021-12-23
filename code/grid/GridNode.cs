@@ -38,7 +38,7 @@ namespace ChristmasGame
 			}
 		}
 
-		NodeBehavior Behavior;
+		[Net] public NodeBehavior Behavior { get; set; }
 		List<string> inputs;
 		List<string> outputs;
 		float rate = 1.0f;
@@ -123,7 +123,7 @@ namespace ChristmasGame
 			List<GridItem> items = grid.GetItemsInTile( X, Y );
 			List<GridItem> pendingTransform = new();
 
-			const float moveSpeed = 2.0f;
+			const float moveSpeed = 1.0f;
 
 			foreach( var item in items )
 			{
@@ -135,8 +135,8 @@ namespace ChristmasGame
 				if ( !inputs.Contains( item.Type ) || Vector2.GetDot( relativePosition, direction ) < 0 )
 				{
 					var targetPos = item.Pos + direction * moveSpeed * Time.Delta;
-					if ( direction.x == 0.0f ) targetPos.x = lerp( targetPos.x, X + 0.5f, 0.3f );
-					if ( direction.y == 0.0f ) targetPos.y = lerp( targetPos.y, Y + 0.5f, 0.3f );
+					if ( direction.x == 0.0f ) targetPos.x = lerp( targetPos.x, X + 0.5f, 0.1f );
+					if ( direction.y == 0.0f ) targetPos.y = lerp( targetPos.y, Y + 0.5f, 0.1f );
 
 					item.Pos = targetPos;
 				}
@@ -161,12 +161,12 @@ namespace ChristmasGame
 				accum += Time.Delta;
 				if ( accum > rate )
 				{
+					accum = 0.0f;
 					switch ( Behavior )
 					{
 						case NodeBehavior.Transformer:
 							if ( outputs.Count > 0 && pendingTransform.Count > 0 )
 							{
-								accum = 0.0f;
 								Log.Info( "item transform" );
 								pendingTransform[0].SetType( outputs[0] );
 							}
@@ -174,14 +174,25 @@ namespace ChristmasGame
 						case NodeBehavior.Producer:
 							if ( outputs.Count > 0 )
 							{
-								accum = 0.0f;
 								Log.Info( "produce item" );
 								grid.PlaceItem( outputs[0], X, Y );
+							}
+							break;
+						case NodeBehavior.Consumer:
+							if( pendingTransform.Count > 0 )
+							{
+								Consume( pendingTransform.Count );
+								foreach ( var item in pendingTransform )
+									grid.DeleteItem( item );
 							}
 							break;
 					}
 				}
 			}
+		}
+
+		protected virtual void Consume( int count )
+		{
 		}
 
 		public static NodeBehavior GetBehavior(string behavior)
