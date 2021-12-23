@@ -14,12 +14,8 @@
 						remaps = 
 						[
 							{
-								from = "sides.vmat"
-								to = "materials/nodes/conveyor_sides.vmat"
-							},
-							{
-								from = "top.vmat"
-								to = "materials/nodes/conveyor_top.vmat"
+								from = "coal.vmat"
+								to = "materials/items/coal.vmat"
 							},
 						]
 						use_global_default = false
@@ -33,10 +29,10 @@
 				[
 					{
 						_class = "RenderMeshFile"
-						filename = "models/nodes/conveyor.fbx"
-						import_translation = [ 0.0, 0.0, -10.0 ]
+						filename = "models/items/coal.fbx"
+						import_translation = [ 0.0, 0.0, 0.0 ]
 						import_rotation = [ 0.0, 0.0, 0.0 ]
-						import_scale = 0.248
+						import_scale = 0.2
 						align_origin_x_type = "None"
 						align_origin_y_type = "None"
 						align_origin_z_type = "None"
@@ -46,21 +42,6 @@
 							exclude_by_default = false
 							exception_list = [  ]
 						}
-					},
-				]
-			},
-			{
-				_class = "PhysicsShapeList"
-				children = 
-				[
-					{
-						_class = "PhysicsShapeBox"
-						parent_bone = ""
-						surface_prop = "default"
-						collision_prop = "default"
-						origin = [ 0.0, 0.0, 0.0 ]
-						angles = [ 0.0, 0.0, 0.0 ]
-						dimensions = [ 50.0, 50.0, 8.0 ]
 					},
 				]
 			},

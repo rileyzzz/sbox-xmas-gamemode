@@ -25,7 +25,7 @@ namespace ChristmasGame
 
 		public ModelEntity HintArrow;
 
-		public Vector3 FloorPosition => new Vector3( -SizeX / 2.0f * gridScale, -SizeY / 2.0f * gridScale, 0.0f );
+		public Vector3 FloorPosition => new Vector3( -SizeX / 2.0f * gridScale, -SizeY / 2.0f * gridScale, -4.0f );
 		public Vector3 OverlayPosition => FloorPosition + new Vector3( 0.0f, 0.0f, 4.0f );
 
 		GridNode _selectedNode;

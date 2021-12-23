@@ -22,7 +22,7 @@
         "coal": {
             "label": "Coal",
             "models": [
-                "models/editor/axis_helper_thick.vmdl"
+                "models/items/coal.vmdl"
             ]
         }
     },
@@ -110,7 +110,7 @@
             ],
             "tiers": [
                 {
-                    "rate": 0.5,
+                    "rate": 1.5,
                     "icon": "ui/item_thumbnails/mine_tier1.png",
                     "model": "models/nodes/mine/mine.vmdl"
                 }

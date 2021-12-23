@@ -36,6 +36,17 @@ namespace ChristmasGame
 				Grid.PlaceNode<CannonNode>( "cannon", 9, 7, 0, 0 );
 				Grid.PlaceNode<CannonNode>( "cannon", 9, 4, 0, 0 );
 				Grid.PlaceNode<CannonNode>( "cannon", 9, 1, 0, 0 );
+
+				//defaults
+				Grid.PlaceNode<GridNode>( "mine", 2, 10, 2, 0 );
+				Grid.PlaceNode<GridNode>( "conveyorbelt", 1, 10, 2, 0 );
+
+
+				Grid.PlaceNode<GridNode>( "factory", 4, 10, 0, 0 );
+				Grid.PlaceNode<GridNode>( "conveyorbelt", 5, 10, 0, 0 );
+				Grid.PlaceNode<GridNode>( "boxer", 6, 10, 0, 0 );
+				Grid.PlaceNode<GridNode>( "conveyorbelt", 7, 10, 0, 0 );
+				Grid.PlaceNode<GridNode>( "wrapper", 8, 10, 0, 0 );
 			}
 		}
 

@@ -60,6 +60,9 @@ namespace ChristmasGame
 			{
 				foreach(var type in ChristmasGame.Config.nodes)
 				{
+					if ( type.Value.type == "consumer" )
+						continue;
+
 					for( int i = 0; i < type.Value.tiers.Count; i++ )
 					{
 						var item = new InventoryItem( type.Key, i );
@@ -69,7 +72,7 @@ namespace ChristmasGame
 						//	item.Count = 1;
 						//if ( type.Key == "wrapper" )
 						//	item.Count = 1;
-						item.Count = 1;
+						//item.Count = 1;
 
 						if ( i == 0 && type.Key == "conveyorbelt" )
 							item.Count = 999;

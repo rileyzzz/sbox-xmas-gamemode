@@ -15,7 +15,7 @@ namespace ChristmasGame
 
 	public partial class GridNode : ModelEntity
 	{
-		string _type;
+		[Net] string _type { get; set; }
 
 		public string Type
 		{
@@ -27,7 +27,8 @@ namespace ChristmasGame
 			}
 		}
 
-		int _tier = 0;
+		[Net] int _tier { get; set; } = 0;
+
 		public int Tier
 		{
 			get => _tier;

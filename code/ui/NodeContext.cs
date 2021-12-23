@@ -7,6 +7,10 @@ namespace ChristmasGame
 {
 	public partial class NodeContext : Panel
 	{
+		ContextButton rotate;
+		ContextButton upgrade;
+		ContextButton remove;
+
 		const float width = 120.0f;
 
 		GridNode _node;
@@ -28,15 +32,15 @@ namespace ChristmasGame
 			Style.Display = DisplayMode.None;
 			Style.Width = width;
 
-			var rotate = AddChild<ContextButton>( "button" );
+			rotate = AddChild<ContextButton>( "button" );
 			rotate.Clicked = Rotate;
 			rotate.Icon.SetText( "refresh" );
 
-			var upgrade = AddChild<ContextButton>( "button" );
+			upgrade = AddChild<ContextButton>( "button" );
 			upgrade.Clicked = Upgrade;
 			upgrade.Icon.SetText( "upgrade" );
 
-			var remove = AddChild<ContextButton>( "button" );
+			remove = AddChild<ContextButton>( "button" );
 			remove.Clicked = Remove;
 			remove.Icon.SetText( "delete" );
 		}
@@ -45,6 +49,9 @@ namespace ChristmasGame
 		{
 			if ( Node == null )
 				return;
+
+			bool canUpgrade = Node.Tier + 1 < ChristmasGame.Config.nodes[Node.Type].tiers.Count;
+			upgrade.Style.Display = canUpgrade ? DisplayMode.Flex : DisplayMode.None;
 
 			//Log.Info("position " + Node.Position + " local position " + Node.LocalPosition);
 			Vector2 pos = Node.WorldSpaceBounds.Center.ToScreen();
