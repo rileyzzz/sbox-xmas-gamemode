@@ -1,0 +1,350 @@
+//=========================================================================================================================
+// Optional
+//=========================================================================================================================
+HEADER
+{
+	CompileTargets = ( IS_SM_50 && ( PC || VULKAN ) );
+	Description = "Test building mat";
+	DevShader = true;
+}
+
+FEATURES
+{
+    #include "common/features.hlsl"
+}
+
+MODES
+{
+    VrForward();													// Indicates this shader will be used for main rendering
+    Depth( "vr_depth_only.vfx" ); 									// Shader that will be used for shadowing and depth prepass
+    ToolsVis( S_MODE_TOOLS_VIS ); 									// Ability to see in the editor
+    ToolsWireframe( "vr_tools_wireframe.vfx" ); 					// Allows for mat_wireframe to work
+	ToolsShadingComplexity( "vr_tools_shading_complexity.vfx" ); 	// Shows how expensive drawing is in debug view
+}
+
+//=========================================================================================================================
+COMMON
+{
+	#include "common/shared.hlsl"
+}
+
+//=========================================================================================================================
+
+struct VertexInput
+{
+	#include "common/vertexinput.hlsl"
+};
+
+//=========================================================================================================================
+
+struct PixelInput
+{
+	#include "common/pixelinput.hlsl"
+};
+
+//=========================================================================================================================
+
+VS
+{
+	#include "common/vertex.hlsl"
+
+	PixelInput MainVs( INSTANCED_SHADER_PARAMS( VS_INPUT i ) )
+	{
+		PixelInput o = ProcessVertex( i );
+		// Add your vertex manipulation functions here
+		return FinalizeVertex( o );
+	}
+}
+
+//=========================================================================================================================
+
+PS
+{
+    //RenderState( BlendEnable, true );
+
+    //RenderState( SrcBlend, SRC_ALPHA );
+	//RenderState( DstBlend, INV_SRC_ALPHA );
+
+// DynamicCombo( D_BAKED_LIGHTING_FROM_VERTEX_STREAM, 0..1, Sys( ALL ) );
+// DynamicCombo( D_BAKED_LIGHTING_FROM_PROBE, 0..1, Sys( ALL ) );
+// DynamicCombo( D_BAKED_LIGHTING_FROM_LIGHTMAP, 0..1, Sys( ALL ) );
+
+//     //-----StaticCombo( S_BAKED_SELF_ILLUM, F_BAKED_SELF_ILLUM, Sys( ALL ) );
+// StaticCombo( S_BAKED_EMISSIVE, F_BAKED_EMISSIVE, Sys( ALL ) );
+
+// BoolAttribute( SupportsMappingDimensions, true );
+
+    //
+    // Easily extract the Material structure from the textures set by the user
+    //
+    //-----------------------------------------------------------------------------
+    // Material GatherMaterial( const PS_INPUT i )
+    // {
+    //     float2 vUV = i.vTextureCoords.xy;
+    //     Material material = ToMaterial( Tex2DS( g_tColor, TextureFiltering, vUV  ), 
+    //                                     Tex2DS( g_tNormal, TextureFiltering, vUV  ), 
+    //                                     Tex2DS( g_tRma, TextureFiltering, vUV  ), 
+    //                                     g_flTintColor  );
+    //     return material;
+    // }
+    
+    // int InteriorSizeX < Default(1); Range(1, 16); UiGroup("Material,10/10"); >;
+    
+
+    
+
+	//CreateInputTexture2D( Front, Srgb, 8, "", "", "Material,10/10", Default3( 1.0, 1.0, 1.0 ) );
+	// CreateInputTexture2D( Left,     Srgb, 8, "", "", "Material,10/10", Default3( 1.0, 1.0, 1.0 ) );
+	// CreateInputTexture2D( Back,     Srgb, 8, "", "", "Material,10/10", Default3( 1.0, 1.0, 1.0 ) );
+	// CreateInputTexture2D( Right,    Srgb, 8, "", "", "Material,10/10", Default3( 1.0, 1.0, 1.0 ) );
+	// CreateInputTexture2D( Top,      Srgb, 8, "", "", "Material,10/10", Default3( 1.0, 1.0, 1.0 ) );
+	// CreateInputTexture2D( Bottom,   Srgb, 8, "", "", "Material,10/10", Default3( 1.0, 1.0, 1.0 ) );
+
+     
+    //CreateTexture2D( FrontTexture )     < Channel( RGBA, None( Front ), Srgb );  OutputFormat( DXT5 ); SrgbRead( true ); >; 
+    // CreateTexture2D( LeftTexture )      < Channel( RGBA, None( Left ), Srgb );      OutputFormat( DXT5 ); SrgbRead( true ); >;
+    // CreateTexture2D( BackTexture )      < Channel( RGBA, None( Back ), Srgb );      OutputFormat( DXT5 ); SrgbRead( true ); >;
+    // CreateTexture2D( RightTexture )     < Channel( RGBA, None( Right ), Srgb );     OutputFormat( DXT5 ); SrgbRead( true ); >;
+    // CreateTexture2D( TopTexture )       < Channel( RGBA, None( Top ), Srgb );       OutputFormat( DXT5 ); SrgbRead( true ); >;
+    // CreateTexture2D( BottomTexture )    < Channel( RGBA, None( Bottom ), Srgb );    OutputFormat( DXT5 ); SrgbRead( true ); >;
+    
+#include "common/pixel.hlsl"
+//#include "common/pixel.config.hlsl"
+
+// struct Material
+// {
+//     float3  Albedo;
+//     float3  Normal;
+//     float3  Emission;
+//     float   Roughness;
+//     float   Metalness;
+//     float   AmbientOcclusion;
+//     float   BlendMask;
+//     float   TintMask;
+//     float   Opacity;
+// };
+
+// PixelOutput FinalizePixelMaterial( PixelInput i, Material m )
+// {
+//     CombinerInput o = MaterialToCombinerInput( i, m );
+//     return FinalizePixel( o );
+// }
+
+#include "building_base.hlsl"
+
+    //CreateInputTexture2D( Interior, Srgb, 8, "", "", "Material,10/10", Default3( 1.0, 1.0, 1.0 ) );
+    //CreateTexture2DInRegister( g_tInteriorTexture, 0 )  < Channel( RGBA, None( Interior ), Srgb );  OutputFormat( DXT5 ); SrgbRead( true ); >;
+
+    #define g_tInteriorTexture g_tColor
+
+    int2 InteriorSize < Default2(1, 1); Range2(1, 1, 16, 16); UiGroup("Interior,10/10"); >;
+    float g_flOpacityMultiplier < Default( 1.0 ); Range(0.0, 1.0); UiGroup("Interior,10/10"); >;
+
+
+    float2 ToInteriorUV(int face, int2 tile, float2 uv)
+    {
+        const float ratio = 1.0/3.0;
+
+        if(face == 0)
+        {
+            uv.y = (uv.y - 0.5) * lerp(1.0, ratio, uv.x) + 0.5;
+            uv.x *= ratio;
+        }
+        if(face == 1)
+        {
+            uv.y = (uv.y - 0.5) * lerp(ratio, 1.0, uv.x) + 0.5;
+            uv.x *= ratio;
+            uv.x += 2.0 * ratio;
+        }
+        if(face == 2)
+        {
+            uv.x = (uv.x - 0.5) * lerp(1.0, ratio, uv.y) + 0.5;
+            uv.y *= ratio;
+        }
+        if(face == 3)
+        {
+            uv.x = (uv.x - 0.5) * lerp(ratio, 1.0, uv.y) + 0.5;
+            uv.y *= ratio;
+            uv.y += 2.0 * ratio;
+        }
+        if(face == 4)
+        {
+            uv = (uv - float2(0.5, 0.5)) * ratio + float2(0.5, 0.5);
+        }
+
+        uv *= float2(1.0, 1.0) / InteriorSize;
+
+        uv += tile / float2(InteriorSize);
+
+        return uv;
+    }
+
+
+	PS_OUTPUT MainPs( PixelInput input )
+	{
+        //Material m = GatherMaterial( input );
+        //float3 front_color = m.Albedo;
+
+        Material m;
+        m.Albedo = float3(0.0, 0.0, 0.0);
+        m.Normal = float3(0.0, 0.0, 1.0);
+        m.Emission = float3(0.0, 0.0, 0.0);
+        m.Roughness = 0.8;
+        m.Metalness = 0.0;
+        m.AmbientOcclusion = 1.0;
+        m.BlendMask = 0.0;
+        m.TintMask = 0.0;
+        m.Opacity = 1.0;
+
+        //float4 rma = float4(0.5, 0.0, 1.0, 0.0);
+        
+        float3 back_color = float3(0.0, 0.0, 0.0);
+        float2 vUV = input.vTextureCoords.xy;
+
+        
+        vUV *= InteriorSize;
+        int2 tile = int2(vUV);
+
+        vUV = frac(vUV);
+
+        // float3 vNormal = normalize(input.vNormalWs);
+        // float3 vTangent = normalize(input.vTangentUWs);
+        // float3 vBiNormal = cross(vTangent, vNormal);
+        // vTangent = cross(vNormal, vBiNormal);
+
+        float3 vNormal = normalize(input.vNormalWs);
+        float3 vTangent = normalize(input.vTangentUWs);
+        float3 vBiTangent = normalize(input.vTangentVWs);
+        float3x3 tangentBasis = transpose(float3x3(vTangent, vBiTangent, vNormal));
+        float3x3 invTangentBasis = transpose(tangentBasis);
+
+        float3 frag_dir = normalize(input.vPositionWithOffsetWs - g_vWorldToCameraOffset.xyz - g_vCameraPositionWs);
+        
+        frag_dir = normalize(mul(invTangentBasis, frag_dir));
+        // frag_dir.y = -frag_dir.y;
+
+        // float2 vScreenUv = CalculateViewportUvFromInvSize( input.vPositionSs.xy, g_vInvGBufferSize.xy );
+        //float3 frag_dir_view = normalize(getNDCPos(input.vPositionWithOffsetWs));
+
+        float3 left_plane[] = {
+            float3(0.0, 0.0, 0.0),
+            float3(0.0, 1.0, 0.0),
+            float3(0.0, 1.0, -1.0),
+            float3(0.0, 0.0, -1.0)
+        };
+
+        float3 right_plane[] = {
+            float3(1.0, 0.0, 0.0),
+            float3(1.0, 1.0, 0.0),
+            float3(1.0, 1.0, -1.0),
+            float3(1.0, 0.0, -1.0)
+        };
+
+        float3 top_plane[] = {
+            float3(0.0, 0.0, 0.0),
+            float3(1.0, 0.0, 0.0),
+            float3(1.0, 0.0, -1.0),
+            float3(0.0, 0.0, -1.0)
+        };
+
+        float3 bottom_plane[] = {
+            float3(0.0, 1.0, 0.0),
+            float3(1.0, 1.0, 0.0),
+            float3(1.0, 1.0, -1.0),
+            float3(0.0, 1.0, -1.0)
+        };
+
+        float3 back_plane[] = {
+            float3(0.0, 0.0, -1.0),
+            float3(0.0, 1.0, -1.0),
+            float3(1.0, 1.0, -1.0),
+            float3(1.0, 0.0, -1.0)
+        };
+
+        TransformPlane(vUV, left_plane);
+        TransformPlane(vUV, right_plane);
+        TransformPlane(vUV, top_plane);
+        TransformPlane(vUV, bottom_plane);
+        TransformPlane(vUV, back_plane);
+
+        float3 hit;
+        int face = CubeTest(frag_dir, vUV, left_plane, right_plane, top_plane, bottom_plane, back_plane, hit);
+        //m.Normal = GetFaceNormal(face);
+
+        switch(face)
+        {
+        case 0:
+            //m.Albedo = Tex2DS( LeftTexture, TextureFiltering, hit.zy ).rgb;
+            back_color = Tex2DS( g_tInteriorTexture, TextureFiltering, ToInteriorUV(face, tile, hit.zy) ).rgb;
+            break;
+        case 1:
+            // hit.z *= -1;
+            hit.z = 1.0 - hit.z;
+
+            //m.Albedo = Tex2DS( RightTexture, TextureFiltering, hit.zy ).rgb;
+            back_color = Tex2DS( g_tInteriorTexture, TextureFiltering, ToInteriorUV(face, tile, hit.zy) ).rgb;
+            break;
+        case 2:
+            //m.Albedo = Tex2DS( TopTexture, TextureFiltering, hit.xz ).rgb;
+            back_color = Tex2DS( g_tInteriorTexture, TextureFiltering, ToInteriorUV(face, tile, hit.xz) ).rgb;
+            break;
+        case 3:
+            //hit.z *= -1;
+            hit.z = 1.0 - hit.z;
+
+            //m.Albedo = Tex2DS( BottomTexture, TextureFiltering, hit.xz ).rgb;
+            back_color = Tex2DS( g_tInteriorTexture, TextureFiltering, ToInteriorUV(face, tile, hit.xz) ).rgb;
+            break;
+        case 4:
+            //m.Albedo = Tex2DS( BackTexture, TextureFiltering, hit.xy ).rgb;
+            back_color = Tex2DS( g_tInteriorTexture, TextureFiltering, ToInteriorUV(face, tile, hit.xy) ).rgb;
+            break;
+        }
+
+        //alpha blend
+        //float front_opacity = m.Opacity * g_flOpacityMultiplier;
+        //m.Albedo = (m.Albedo * front_opacity) + (back_color * (1 - front_opacity));
+        m.Albedo = back_color;
+        m.Emission = back_color;
+
+
+
+        // if(FaceTest(frag_dir, vUV, left_plane, hit))
+        // {
+        //     m.Albedo = Tex2DS( LeftTexture, TextureFiltering, hit.zy );
+        //     m.Normal = float3(1.0, 0.0, 0.0);
+        // }
+
+        // if(FaceTest(frag_dir, vUV, right_plane, hit))
+        // {
+        //     hit.z *= -1;
+        //     m.Albedo = Tex2DS( RightTexture, TextureFiltering, hit.zy );
+        //     m.Normal = float3(-1.0, 0.0, 0.0);
+        // }
+
+        // if(FaceTest(frag_dir, vUV, top_plane, hit))
+        // {
+        //     m.Albedo = Tex2DS( TopTexture, TextureFiltering, hit.xz );
+        //     m.Normal = float3(0.0, 1.0, 0.0);
+        // }
+
+        // if(FaceTest(frag_dir, vUV, bottom_plane, hit))
+        // {
+        //     hit.z *= -1;
+        //     m.Albedo = Tex2DS( BottomTexture, TextureFiltering, hit.xz );
+        //     m.Normal = float3(0.0, -1.0, 0.0);
+        // }
+
+        // if(FaceTest(frag_dir, vUV, back_plane, hit))
+        // {
+        //     m.Albedo = Tex2DS( BackTexture, TextureFiltering, hit.xy );
+        //     m.Normal = float3(0.0, 0.0, 1.0);
+        // }
+
+
+        //m.Normal = m.Normal * 0.5 + float3(0.5, 0.5, 0.5);
+
+
+        return FinalizePixelMaterial( input, m );
+	}
+}

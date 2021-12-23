@@ -21,5 +21,18 @@ namespace ChristmasGame
 
 			Log.Info( "cannon input" );
 		}
+
+		public override void ClientSpawn()
+		{
+			base.ClientSpawn();
+
+			//Log.Info( "spawn isclient " + IsClient );
+			//if( IsClient )
+			//{
+			//	foreach ( var child in Local.Hud.Children )
+			//		(child as ChristmasHUD).CreateFireHint( this );
+			//}
+
+		}
 	}
 }

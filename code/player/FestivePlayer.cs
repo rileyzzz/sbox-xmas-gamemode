@@ -105,7 +105,7 @@ namespace ChristmasGame
 			Animator = new TopDownAnimator();
 
 			Camera = new SleighCamera();
-
+			
 			EnableAllCollisions = true;
 			EnableDrawing = true;
 			EnableHideInFirstPerson = true;

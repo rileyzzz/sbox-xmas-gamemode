@@ -65,7 +65,7 @@ namespace ChristmasGame
 
 				Floor = Create<ModelEntity>();
 				Floor.Parent = this;
-				Floor.Position = FloorPosition;
+				Floor.LocalPosition = FloorPosition;
 				Floor.SetModel( FloorModel );
 			}
 		}
@@ -173,8 +173,10 @@ namespace ChristmasGame
 				TileOverlay?.Delete();
 
 				TileOverlay = Create<ModelEntity>();
+				
 				TileOverlay.Parent = this;
-				TileOverlay.Position = OverlayPosition;
+				TileOverlay.LocalPosition = OverlayPosition;
+
 				TileOverlay.SetModel( OverlayModel );
 			}
 			else
@@ -228,7 +230,7 @@ namespace ChristmasGame
 			node.X = x;
 			node.Y = y;
 
-			node.Position = new Vector3((x - SizeX / 2.0f) * gridScale + gridScale / 2.0f, (y - SizeY / 2.0f) * gridScale + gridScale / 2.0f, 0.0f);
+			node.LocalPosition = new Vector3((x - SizeX / 2.0f) * gridScale + gridScale / 2.0f, (y - SizeY / 2.0f) * gridScale + gridScale / 2.0f, 0.0f);
 			node.Direction = direction;
 
 			//node.SetModel( "models/props/cs_office/chair_office.vmdl" );

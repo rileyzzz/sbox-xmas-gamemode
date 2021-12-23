@@ -65,8 +65,6 @@ namespace ChristmasGame
 
 			if ( IsServer )
 			{
-				ActiveSleighs.Add( Create<Sleigh>() );
-
 				//new MinimalHudEntity();
 				new ChristmasHUDEntity();
 			}
@@ -77,6 +75,17 @@ namespace ChristmasGame
 			}
 		}
 
+		public override void PostLevelLoaded()
+		{
+			base.PostLevelLoaded();
+
+
+			if ( IsServer )
+			{
+				ActiveSleighs.Add( Create<Sleigh>() );
+			}
+		}
+
 		public override void ClientJoined( Client client )
 		{
 
@@ -84,12 +93,24 @@ namespace ChristmasGame
 
 			var player = new FestivePlayer();
 			client.Pawn = player;
-			player.ClientSleigh = ActiveSleighs[0];
+
+			ActiveSleighs[0].AddPlayer( player );
+
+			//player.Parent = ActiveSleighs[0];
 
 			player.Respawn();
-
-			
 			//player.Parent = ActiveSleighs[0];
+			SpawnClient( To.Single( client ) );
+		}
+
+		[ClientRpc]
+		void SpawnClient()
+		{
+			Log.Info( "spawn client" );
+
+			foreach ( var child in Local.Hud.Children )
+				(child as ChristmasHUD).Update();
+				//(child as ChristmasHUD).CreateFireHints();
 		}
 
 		public override void ClientDisconnect( Client cl, NetworkDisconnectionReason reason )
@@ -110,6 +131,7 @@ namespace ChristmasGame
 					sleigh.Simulate( cl );
 			}
 
+			
 		}
 	}
 }

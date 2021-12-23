@@ -66,7 +66,7 @@ namespace ChristmasGame
 			if ( Model.Parent is not GridEntity grid )
 				return;
 
-			Model.Position = grid.GridToLocal( new Vector3( Pos.x, Pos.y, 0.0f ) );
+			Model.LocalPosition = grid.GridToLocal( new Vector3( Pos.x, Pos.y, 0.0f ) );
 		}
 	}
 }

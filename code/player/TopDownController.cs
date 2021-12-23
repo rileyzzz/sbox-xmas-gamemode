@@ -374,11 +374,11 @@ namespace ChristmasGame
 		/// </summary>
 		public virtual void ClearGroundEntity()
 		{
-			if ( GroundEntity == null ) return;
+			//if ( GroundEntity == null ) return;
 
-			GroundEntity = null;
-			GroundNormal = Vector3.Up;
-			SurfaceFriction = 1.0f;
+			//GroundEntity = null;
+			//GroundNormal = Vector3.Up;
+			//SurfaceFriction = 1.0f;
 		}
 
 		/// <summary>
