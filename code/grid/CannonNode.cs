@@ -34,5 +34,10 @@ namespace ChristmasGame
 			//}
 
 		}
+
+		public float GetPlayerDistance()
+		{
+			return Vector3.DistanceBetween( Position, Local.Pawn.Position );
+		}
 	}
 }

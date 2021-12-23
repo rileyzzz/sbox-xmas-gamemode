@@ -50,6 +50,9 @@ namespace ChristmasGame
 			}
 		}
 
+		public CannonNode TargetCannon = null;
+
+
 		[Net] public IList<InventoryItem> NodeInventory { get; set; }
 
 		public FestivePlayer()
@@ -494,6 +497,43 @@ namespace ChristmasGame
 				//{
 				//	PlaceItem( "toy", 0, 0 );
 				//}
+			}
+			else
+			{
+				if ( input.Pressed( InputButton.Use ) )
+				{
+					if( TargetCannon == null )
+					{
+						float closestDist = 1000.0f;
+						CannonNode closest = null;
+
+						foreach ( var node in ClientSleigh.Grid.Nodes )
+						{
+							if ( node is not CannonNode cannon )
+								continue;
+
+							var dist = cannon.GetPlayerDistance();
+
+							if ( dist < closestDist )
+							{
+								closestDist = dist;
+								closest = cannon;
+							}
+						}
+
+						if ( closest != null && closestDist < 100.0f )
+						{
+							Log.Info( "switch to cannon" );
+							TargetCannon = closest;
+						}
+					}
+					else
+					{
+						TargetCannon = null;
+					}
+
+					UpdateHUD();
+				}
 			}
 
 

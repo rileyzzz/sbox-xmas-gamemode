@@ -31,13 +31,15 @@ namespace ChristmasGame
 		KeyHint placeHint;
 		KeyHint rotateHint;
 
+		KeyHint launchHint;
+
 		Dictionary<CannonNode, KeyHint> FireHints = new();
 
 		string GetInputButtonName(string input)
 		{
 			string name = Input.GetKeyWithBinding( input ).ToUpper();
-			if ( name == "Mouse1" ) return "LMB";
-			if ( name == "Mouse2" ) return "RMB";
+			if ( name == "MOUSE1" ) return "LMB";
+			if ( name == "MOUSE2" ) return "RMB";
 			return name;
 		}
 		public ChristmasHUD()
@@ -58,6 +60,10 @@ namespace ChristmasGame
 			rotateHint = hintContainer.AddChild<KeyHint>( "keyHint" );
 			//rotateHint.SetText("RMB", "Rotate", true);
 			rotateHint.SetText( GetInputButtonName( "iv_attack2" ), "Rotate", true);
+
+			launchHint = hintContainer.AddChild<KeyHint>( "keyHint" );
+			launchHint.SetText( GetInputButtonName( "iv_attack" ), "Fire Present", true );
+			launchHint.Style.Display = DisplayMode.None;
 
 			Update();
 
@@ -120,14 +126,26 @@ namespace ChristmasGame
 
 			if ( Local.Pawn is FestivePlayer player )
 			{
-				showNodeBar = player.BuildMode;
+				showNodeBar = player.BuildMode && player.TargetCannon == null;
 
 				bar.Style.Display = showNodeBar ? DisplayMode.Flex : DisplayMode.None;
 				if( showNodeBar ) bar.Update();
 				context.Node = player.ClientSleigh.Grid.SelectedNode;
+
+				if( player.TargetCannon == null )
+				{
+					buildHint.Style.Display = DisplayMode.Flex;
+					launchHint.Style.Display = DisplayMode.None;
+				}
+				else
+				{
+					buildHint.Style.Display = DisplayMode.None;
+					launchHint.Style.Display = DisplayMode.Flex;
+
+				}
 			}
 
-			
+
 			//buildHint.SetText( "Tab", showNodeBar ? "Exit Build Mode" : "Build Mode", true );
 			buildHint.SetText( GetInputButtonName( "iv_score" ), showNodeBar ? "Exit Build Mode" : "Build Mode", true );
 
@@ -137,14 +155,17 @@ namespace ChristmasGame
 			hintContainer.Style.Left = Length.Pixels( 10 );
 			hintContainer.Style.Bottom = showNodeBar ? Length.Pixels( 150 ) : Length.Pixels( 10 );
 
-			CreateFireHints();
+			if(FireHints.Count == 0)
+				CreateFireHints();
 		}
 
 		public override void Tick()
 		{
 			base.Tick();
+			if ( Local.Pawn is not FestivePlayer player )
+				return;
 
-			foreach(var entry in FireHints)
+			foreach (var entry in FireHints)
 			{
 				var cannon = entry.Key;
 				var hint = entry.Value;
@@ -154,8 +175,8 @@ namespace ChristmasGame
 				const float hintDist = 75.0f;
 				const float radiusOffset = 25.0f;
 
-				var dist = Vector3.DistanceBetween( cannon.Position, Local.Pawn.Position ) - radiusOffset;
-				hint.Style.Opacity = Math.Clamp( (hintDist - dist) / hintDist, 0.0f, 1.0f );
+				var dist = cannon.GetPlayerDistance() - radiusOffset;
+				hint.Style.Opacity = player.BuildMode ? 0.0f : Math.Clamp( (hintDist - dist) / hintDist, 0.0f, 1.0f );
 			}
 		}
 
