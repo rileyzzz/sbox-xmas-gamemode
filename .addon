@@ -1,11 +1,4 @@
 {
-	"name": "Cool Xmas Gamemode",
-    "sharedassets": "*.*",
-	"gamemodes": [
-        {
-            "name": "sbox-xmas-gamemode",
-            "title": "Xmas Gamemode",
-            "description": "fun stuff"
-        }
-    ]
+	"sharedassets": "*.*",
+	"ident": "rileyzzz.xmas_factory"
 }
