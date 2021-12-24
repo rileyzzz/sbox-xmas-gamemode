@@ -1,3 +1,6 @@
 .vs
 code/obj
 code/Properties
+materials/*.png
+models/*.fbx
+models/*.vmdl

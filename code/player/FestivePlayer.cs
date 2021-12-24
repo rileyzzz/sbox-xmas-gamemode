@@ -533,6 +533,9 @@ namespace ChristmasGame
 			game.PresentsDelivered -= tierData.cost;
 
 			node.Tier++;
+
+			//clear selection so we can't re-upgrade
+			NodePurchased( To.Single( cl ) );
 		}
 
 		public override void BuildInput( InputBuilder input )

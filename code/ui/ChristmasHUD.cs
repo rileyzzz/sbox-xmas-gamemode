@@ -34,6 +34,7 @@ namespace ChristmasGame
 		KeyHint rotateHint;
 
 		KeyHint launchHint;
+		KeyHint exitCannonHint;
 
 		Panel upgradePromptContainer;
 		Prompt upgradePrompt;
@@ -83,6 +84,10 @@ namespace ChristmasGame
 			launchHint = hintContainer.AddChild<KeyHint>( "keyHint" );
 			launchHint.SetText( GetInputButtonName( "iv_attack" ), "Fire Present", true );
 			launchHint.Style.Display = DisplayMode.None;
+
+			exitCannonHint = hintContainer.AddChild<KeyHint>( "keyHint" );
+			exitCannonHint.SetText( GetInputButtonName( "iv_use" ), "Exit Cannon" );
+			exitCannonHint.Style.Display = DisplayMode.None;
 
 			upgradePromptContainer = AddChild<Panel>( "promptContainer" );
 			upgradePrompt = upgradePromptContainer.AddChild<Prompt>( "prompt" );
@@ -218,12 +223,14 @@ namespace ChristmasGame
 				{
 					buildHint.Style.Display = DisplayMode.Flex;
 					launchHint.Style.Display = DisplayMode.None;
+					exitCannonHint.Style.Display = DisplayMode.None;
 					ammo.Style.Display = DisplayMode.None;
 				}
 				else
 				{
 					buildHint.Style.Display = DisplayMode.None;
 					launchHint.Style.Display = DisplayMode.Flex;
+					exitCannonHint.Style.Display = DisplayMode.Flex;
 					ammo.Style.Display = DisplayMode.Flex;
 
 					ammo.Presents.Text.Text = player.TargetCannon.NumPresents.ToString();
