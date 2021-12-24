@@ -15,7 +15,7 @@ namespace ChristmasGame
 		{
 			base.Consume( count );
 
-			Log.Info( "engine input" );
+			//Log.Info( "engine input" );
 		}
 	}
 }

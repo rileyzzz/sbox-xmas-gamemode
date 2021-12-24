@@ -248,6 +248,17 @@ namespace ChristmasGame
 			Nodes.Remove(node);
 		}
 
+		public GridNode FindNode( int networkId )
+		{
+			foreach ( var node in Nodes )
+			{
+				if ( node.NetworkIdent == networkId )
+					return node;
+			}
+
+			return null;
+		}
+
 		public void PlaceItem( string type, int x, int y )
 		{
 			Assert.True( IsServer );
@@ -293,7 +304,7 @@ namespace ChristmasGame
 			if ( hit == null )
 				return false;
 
-			DebugOverlay.Line( (Vector3)hit, (Vector3)hit + new Vector3(0.0f, 0.0f, 50.0f) );
+			//DebugOverlay.Line( (Vector3)hit, (Vector3)hit + new Vector3(0.0f, 0.0f, 50.0f) );
 
 			Vector3 localPos = WorldToGrid( (Vector3)hit );
 

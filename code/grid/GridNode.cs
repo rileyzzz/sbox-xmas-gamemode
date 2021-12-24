@@ -154,7 +154,7 @@ namespace ChristmasGame
 			{
 				if ( pendingTransform.Count > maxItems )
 				{
-					Log.Info( "item count exceeded" );
+					//Log.Info( "item count exceeded" );
 					for ( int i = maxItems; i < pendingTransform.Count; i++ )
 						grid.DeleteItem( pendingTransform[i] );
 				}
@@ -168,14 +168,14 @@ namespace ChristmasGame
 						case NodeBehavior.Transformer:
 							if ( outputs.Count > 0 && pendingTransform.Count > 0 )
 							{
-								Log.Info( "item transform" );
+								//Log.Info( "item transform" );
 								pendingTransform[0].SetType( outputs[0] );
 							}
 							break;
 						case NodeBehavior.Producer:
 							if ( outputs.Count > 0 )
 							{
-								Log.Info( "produce item" );
+								//Log.Info( "produce item" );
 								grid.PlaceItem( outputs[0], X, Y );
 							}
 							break;

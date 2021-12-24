@@ -30,6 +30,7 @@ namespace ChristmasGame
 	public struct NodeTier
 	{
 		public float rate { get; set; }
+		public int cost { get; set; }
 		public string icon { get; set; }
 		public string model { get; set; }
 	}
@@ -41,6 +42,8 @@ namespace ChristmasGame
 
 
 		[Net] List<Sleigh> ActiveSleighs { get; set; } = new();
+		[Net, Change] public int PresentsDelivered { get; set; } = 0;
+		public int MaxPresents = 500;
 
 		public ChristmasGame()
 		{
@@ -73,6 +76,23 @@ namespace ChristmasGame
 			{
 
 			}
+		}
+
+		public void OnPresentsDeliveredChanged(int oldValue, int newValue)
+		{
+			if ( !IsClient )
+				return;
+
+			foreach ( var child in Local.Hud.Children )
+				(child as ChristmasHUD).Update();
+
+			if ( PresentsDelivered >= MaxPresents )
+				Win();
+		}
+
+		void Win()
+		{
+			Local.Client.Kick();
 		}
 
 		public override void PostLevelLoaded()

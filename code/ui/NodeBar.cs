@@ -86,12 +86,15 @@ namespace ChristmasGame
 			{
 				_item = value;
 				//Icon.SetTexture( ChristmasGame.Config.nodes[_item.Type].tiers[_item.Tier].icon );
-				Icon.Style.BackgroundImage = Texture.Load( ChristmasGame.Config.nodes[_item.Type].tiers[_item.Tier].icon );
+
+				var typeData = ChristmasGame.Config.nodes[_item.Type].tiers[_item.Tier];
+
+				Icon.Style.BackgroundImage = Texture.Load( typeData.icon );
 
 				if ( Item.Count == 0 )
 				{
 					Icon.Style.BackgroundTint = new Color( 0.2f, 0.2f, 0.2f );
-					OverlayText.SetText( "$100" );
+					OverlayText.SetText( "Buy (" + typeData.cost.ToString() + ")" );
 					SetClass( "disabled", true );
 				}
 			}
@@ -126,12 +129,19 @@ namespace ChristmasGame
 
 			if ( player.ActiveItem == Item )
 				player.ActiveItem = null;
-			else if( Item.Count > 0 )
+			else if ( Item.Count > 0 )
 				player.ActiveItem = Item;
+			else
+				TryPurchase();
 
 			(Parent as NodeBar).UpdateActive();
 
 			e.StopPropagation();
+		}
+
+		void TryPurchase()
+		{
+			(Parent.Parent as ChristmasHUD).OpenBuyPrompt( Item );
 		}
 
 		//protected override void OnMouseDown( MousePanelEvent e )

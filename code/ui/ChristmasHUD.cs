@@ -24,6 +24,8 @@ namespace ChristmasGame
 		NodeBar bar;
 		NodeContext context;
 		PresentMeter meter;
+		AmmoDisplay ammo;
+
 
 		Panel hintContainer;
 
@@ -32,6 +34,14 @@ namespace ChristmasGame
 		KeyHint rotateHint;
 
 		KeyHint launchHint;
+
+		Panel upgradePromptContainer;
+		Prompt upgradePrompt;
+
+
+		InventoryItem pendingBuy = null;
+		GridNode pendingUpgrade = null;
+
 
 		Dictionary<CannonNode, KeyHint> FireHints = new();
 
@@ -47,6 +57,11 @@ namespace ChristmasGame
 			bar = AddChild<NodeBar>( "nodeBar" );
 			context = AddChild<NodeContext>( "context" );
 			meter = AddChild<PresentMeter>( "meterContainer" );
+			ammo = AddChild<AmmoDisplay>( "ammoDisplay" );
+			
+			ammo.Style.Left = Length.Pixels( 10 );
+			ammo.Style.Top = Length.Pixels( 10 );
+			ammo.Style.Display = DisplayMode.None;
 
 			hintContainer = AddChild<Panel>( "hintContainer" );
 
@@ -55,21 +70,78 @@ namespace ChristmasGame
 
 			placeHint = hintContainer.AddChild<KeyHint>( "keyHint" );
 			//placeHint.SetText("LMB", "Place", true);
-			placeHint.SetText( GetInputButtonName( "iv_attack" ), "Place", true);
+			placeHint.SetText( GetInputButtonName( "iv_attack" ), "Place", true );
 
 			rotateHint = hintContainer.AddChild<KeyHint>( "keyHint" );
 			//rotateHint.SetText("RMB", "Rotate", true);
-			rotateHint.SetText( GetInputButtonName( "iv_attack2" ), "Rotate", true);
+			rotateHint.SetText( GetInputButtonName( "iv_attack2" ), "Rotate", true );
 
 			launchHint = hintContainer.AddChild<KeyHint>( "keyHint" );
 			launchHint.SetText( GetInputButtonName( "iv_attack" ), "Fire Present", true );
 			launchHint.Style.Display = DisplayMode.None;
+
+			upgradePromptContainer = AddChild<Panel>( "promptContainer" );
+			upgradePrompt = upgradePromptContainer.AddChild<Prompt>( "prompt" );
+			upgradePrompt.Accept = PromptAccept;
+			upgradePrompt.Cancel = PromptCancel;
+			upgradePrompt.Style.Display = DisplayMode.None;
 
 			Update();
 
 			//meter.Presents = 0;
 			//meter.MaxPresents = 100;
 
+		}
+
+		void ClosePrompt()
+		{
+			upgradePrompt.Style.Display = DisplayMode.None;
+
+			pendingBuy = null;
+			pendingUpgrade = null;
+		}
+
+		public void OpenBuyPrompt( InventoryItem item )
+		{
+			Log.Info( "open buy prompt" );
+			pendingBuy = item;
+			pendingUpgrade = null;
+
+			var typeData = ChristmasGame.Config.nodes[item.Type];
+			var tierData = typeData.tiers[0];
+
+			upgradePrompt.Text = "Buy 1 '" + typeData.label + "' (" + tierData.cost.ToString() + " Presents)?";
+			upgradePrompt.Style.Display = DisplayMode.Flex;
+		}
+
+		public void OpenUpgradePrompt( GridNode node )
+		{
+			Log.Info( "open upgrade prompt" );
+			pendingBuy = null;
+			pendingUpgrade = node;
+
+			var typeData = ChristmasGame.Config.nodes[node.Type];
+			var tierData = typeData.tiers[node.Tier + 1];
+
+			upgradePrompt.Text = "Upgrade '" + typeData.label + "' to tier " + (node.Tier + 1).ToString() + " (" + tierData.cost + " Presents)?";
+			upgradePrompt.Style.Display = DisplayMode.Flex;
+		}
+
+		void PromptAccept()
+		{
+			Log.Info( "prompt accept" );
+
+			if( pendingBuy != null)
+				FestivePlayer.PurchaseNodeServer( pendingBuy.Type );
+			else if (pendingUpgrade != null)
+				FestivePlayer.UpgradeNodeServer( pendingUpgrade.NetworkIdent );
+
+			ClosePrompt();
+		}
+
+		void PromptCancel()
+		{
+			ClosePrompt();
 		}
 
 		public void CreateFireHints()
@@ -124,6 +196,12 @@ namespace ChristmasGame
 		{
 			bool showNodeBar = false;
 
+			if( Game.Current is ChristmasGame game )
+			{
+				meter.Presents = game.PresentsDelivered;
+				meter.MaxPresents = game.MaxPresents;
+			}
+
 			if ( Local.Pawn is FestivePlayer player )
 			{
 				showNodeBar = player.BuildMode && player.TargetCannon == null;
@@ -136,12 +214,15 @@ namespace ChristmasGame
 				{
 					buildHint.Style.Display = DisplayMode.Flex;
 					launchHint.Style.Display = DisplayMode.None;
+					ammo.Style.Display = DisplayMode.None;
 				}
 				else
 				{
 					buildHint.Style.Display = DisplayMode.None;
 					launchHint.Style.Display = DisplayMode.Flex;
+					ammo.Style.Display = DisplayMode.Flex;
 
+					ammo.Presents.Text.Text = player.TargetCannon.NumPresents.ToString();
 				}
 			}
 

@@ -36,12 +36,14 @@
             ],
             "tiers": [
                 {
-                    "rate": 1.5,
+                    "rate": 2.5,
+                    "cost": 10,
                     "icon": "ui/item_thumbnails/factory_tier1.png",
                     "model": "models/nodes/factory/tier1.vmdl"
                 },
                 {
                     "rate": 1.0,
+                    "cost": 15,
                     "icon": "ui/item_thumbnails/factory_tier2.png",
                     "model": "models/nodes/factory/tier2.vmdl"
                 }
@@ -58,17 +60,20 @@
             ],
             "tiers": [
                 {
-                    "rate": 1.5,
+                    "rate": 2.5,
+                    "cost": 10,
                     "icon": "ui/item_thumbnails/boxer_tier1.png",
                     "model": "models/nodes/boxer/tier1.vmdl"
                 },
                 {
                     "rate": 1.0,
+                    "cost": 15,
                     "icon": "ui/item_thumbnails/boxer_tier2.png",
                     "model": "models/nodes/boxer/tier2.vmdl"
                 },
                 {
                     "rate": 0.5,
+                    "cost": 20,
                     "icon": "ui/item_thumbnails/boxer_tier3.png",
                     "model": "models/nodes/boxer/tier3.vmdl"
                 }
@@ -85,17 +90,20 @@
             ],
             "tiers": [
                 {
-                    "rate": 1.5,
+                    "rate": 2.5,
+                    "cost": 10,
                     "icon": "ui/item_thumbnails/wrapper_tier1.png",
                     "model": "models/nodes/wrapper/tier1.vmdl"
                 },
                 {
                     "rate": 1.0,
+                    "cost": 15,
                     "icon": "ui/item_thumbnails/wrapper_tier2.png",
                     "model": "models/nodes/wrapper/tier2.vmdl"
                 },
                 {
                     "rate": 0.5,
+                    "cost": 20,
                     "icon": "ui/item_thumbnails/wrapper_tier3.png",
                     "model": "models/nodes/wrapper/tier3.vmdl"
                 }
@@ -111,6 +119,7 @@
             "tiers": [
                 {
                     "rate": 1.5,
+                    "cost": 10,
                     "icon": "ui/item_thumbnails/mine_tier1.png",
                     "model": "models/nodes/mine/mine.vmdl"
                 }
@@ -124,6 +133,7 @@
             "tiers": [
                 {
                     "rate": 0.0,
+                    "cost": 0,
                     "icon": "ui/item_thumbnails/conveyor.png",
                     "model": "models/nodes/conveyor.vmdl"
                 }
@@ -139,6 +149,7 @@
             "tiers": [
                 {
                     "rate": 0.0,
+                    "cost": 9999,
                     "icon": "ui/item_thumbnails/conveyor.png",
                     "model": "models/nodes/cannon.vmdl"
                 }
@@ -154,6 +165,7 @@
             "tiers": [
                 {
                     "rate": 0.0,
+                    "cost": 9999,
                     "icon": "ui/item_thumbnails/conveyor.png",
                     "model": "models/nodes/factory/tier2.vmdl"
                 }

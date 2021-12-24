@@ -43,6 +43,35 @@
 							exception_list = [  ]
 						}
 					},
+					{
+						_class = "RenderPrimitivePlane"
+						name = "bottom"
+						parent_bone = ""
+						material_name = "materials/items/present.vmat"
+						origin = [ 0.0, 0.0, 0.0 ]
+						angles = [ 180.0, 0.0, 0.0 ]
+						max_u = 0.1
+						max_v = 0.1
+						width = 16.0
+						height = 16.0
+						segments_x = 1
+						segments_y = 1
+					},
+				]
+			},
+			{
+				_class = "PhysicsShapeList"
+				children = 
+				[
+					{
+						_class = "PhysicsShapeBox"
+						parent_bone = ""
+						surface_prop = "plastic.hollow"
+						collision_prop = "default"
+						origin = [ 0.0, 0.0, 8.87877 ]
+						angles = [ 0.0, 0.0, 0.0 ]
+						dimensions = [ 18.633865, 18.596081, 19.162783 ]
+					},
 				]
 			},
 		]

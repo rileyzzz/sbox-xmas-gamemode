@@ -77,6 +77,7 @@ namespace ChristmasGame
 		void Upgrade()
 		{
 			Log.Info( "upgrade" );
+			(Parent as ChristmasHUD).OpenUpgradePrompt( Node );
 		}
 
 		void Remove()

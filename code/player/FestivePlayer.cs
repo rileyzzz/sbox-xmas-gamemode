@@ -50,7 +50,7 @@ namespace ChristmasGame
 			}
 		}
 
-		public CannonNode TargetCannon = null;
+		public CannonNode TargetCannon { get; set; } = null;
 
 
 		[Net] public IList<InventoryItem> NodeInventory { get; set; }
@@ -144,7 +144,7 @@ namespace ChristmasGame
 		GridNode NodeTrace()
 		{
 			Ray tr = new Ray( Input.Cursor.Origin, Input.Cursor.Direction );
-			var result = Trace.Ray( tr, 1000.0f ).HitLayer(CollisionLayer.Hitbox, true).WithAllTags( "festive_node" ).Run();
+			var result = Trace.Ray( tr, 5000.0f ).HitLayer(CollisionLayer.Hitbox, true).WithAllTags( "festive_node" ).Run();
 
 			if ( result.Hit && result.Entity is GridNode node )
 				return node;
@@ -383,16 +383,7 @@ namespace ChristmasGame
 				return;
 
 			Log.Info( "removing node " + networkId );
-			GridNode node = null;
-
-			foreach ( var a in player.ClientSleigh.Grid.Nodes )
-			{
-				if ( a.NetworkIdent == networkId )
-				{
-					node = a;
-					break;
-				}
-			}
+			GridNode node = player.ClientSleigh.Grid.FindNode( networkId );
 
 			if ( node != null )
 			{
@@ -421,9 +412,132 @@ namespace ChristmasGame
 			RemoveNodeServer( node.NetworkIdent );
 		}
 
+		[ServerCmd]
+		static void FireCannonServer(int networkId, Vector3 start, Vector3 dir)
+		{
+			// easy to cheese with this start vector here but I'm running out of time for this gamejam
+			// so lets assume everyone will play fair :)
+
+			Log.Info("firing cannon");
+
+			Client cl = ConsoleSystem.Caller;
+
+			if ( cl.Pawn is not FestivePlayer player )
+				return;
+
+			CannonNode cannon = (CannonNode)player.ClientSleigh.Grid.FindNode( networkId );
+
+			if(cannon == null)
+			{
+				Log.Warning( "Unable to find cannon." );
+				return;
+			}
+
+			if ( cannon.NumPresents <= 0 )
+				return;
+
+			cannon.NumPresents--;
+
+			var present = Entity.Create<PhysicsPresent>();
+			present.SetModel( "models/items/present.vmdl" );
+			present.SetupPhysicsFromModel( PhysicsMotionType.Dynamic );
+			present.CollisionGroup = CollisionGroup.Prop;
+			
+			//present.Position = ((SleighCamera)player.Camera).Position;
+			present.Position = start + dir * 100.0f;
+			present.Velocity = dir * 3000.0f;
+
+			Log.Info( "present start pos " + present.Position );
+		}
+
+		public void FireCannon( Vector3 start, Vector3 dir )
+		{
+			if ( TargetCannon == null )
+				return;
+
+			FireCannonServer( TargetCannon.NetworkIdent, start, dir );
+		}
+
+		[ClientRpc]
+		public static void NodePurchased()
+		{
+			if ( Local.Pawn is not FestivePlayer player )
+				return;
+
+			player.ClientSleigh.Grid.SelectedNode = null;
+			UpdateHUD();
+		}
+
+		[ServerCmd]
+		public static void PurchaseNodeServer( string type )
+		{
+			Client cl = ConsoleSystem.Caller;
+
+			if ( cl.Pawn is not FestivePlayer player )
+				return;
+
+			if ( Game.Current is not ChristmasGame game )
+				return;
+
+			var tierData = ChristmasGame.Config.nodes[type].tiers[0];
+			if ( tierData.cost > game.PresentsDelivered )
+				return;
+
+			game.PresentsDelivered -= tierData.cost;
+
+			foreach ( var item in player.NodeInventory )
+			{
+				if ( item.Type == type && item.Tier == 0 )
+				{
+					item.Count++;
+					break;
+				}
+			}
+			//game.PresentsDelivered
+
+			NodePurchased( To.Single( cl ) );
+		}
+
+		[ServerCmd]
+		public static void UpgradeNodeServer( int networkId )
+		{
+			Client cl = ConsoleSystem.Caller;
+
+			if ( cl.Pawn is not FestivePlayer player )
+				return;
+
+			if ( Game.Current is not ChristmasGame game )
+				return;
+
+			GridNode node = player.ClientSleigh.Grid.FindNode( networkId );
+
+			if ( node == null )
+			{
+				Log.Warning( "Unable to find node to upgrade." );
+				return;
+			}
+
+			var typeData = ChristmasGame.Config.nodes[node.Type];
+
+			if ( node.Tier + 1 >= typeData.tiers.Count )
+			{
+				Log.Warning("Invalid upgrade tier.");
+				return;
+			}
+
+			var tierData = typeData.tiers[node.Tier + 1];
+
+			if ( tierData.cost > game.PresentsDelivered )
+				return;
+
+			game.PresentsDelivered -= tierData.cost;
+
+			node.Tier++;
+		}
+
 		public override void BuildInput( InputBuilder input )
 		{
-			if( input.Pressed( InputButton.Score ) )
+			if( input.Pressed( InputButton.Score ) && TargetCannon == null )
 			{
 				ToggleBuildMode();
 			}
@@ -500,6 +614,12 @@ namespace ChristmasGame
 			}
 			else
 			{
+				if ( input.Pressed( InputButton.Attack1 ) && TargetCannon != null )
+				{
+					//Input.Cursor.Origin, Input.Cursor.Direction
+					FireCannon( Input.Cursor.Origin, Input.Cursor.Direction );
+				}
+
 				if ( input.Pressed( InputButton.Use ) )
 				{
 					if( TargetCannon == null )

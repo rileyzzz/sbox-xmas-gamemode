@@ -9,6 +9,8 @@ namespace ChristmasGame
 	{
 		Panel meter;
 		Panel bar;
+		Label barText;
+
 		Label text;
 
 		int _presents = 0;
@@ -40,6 +42,8 @@ namespace ChristmasGame
 
 			meter = AddChild<Panel>( "meter" );
 			bar = meter.AddChild<Panel>( "bar" );
+			barText = bar.AddChild<Label>( "text" );
+			barText.Text = "0";
 
 			text = AddChild<Label>( "text" );
 			text.Text = "Present-O-Meter";
@@ -48,6 +52,7 @@ namespace ChristmasGame
 		public void Update()
 		{
 			bar.Style.Height = Length.Percent( (float)Presents / MaxPresents * 100.0f );
+			barText.Text = Presents.ToString();
 		}
 	}
 }

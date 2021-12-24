@@ -10,7 +10,6 @@ namespace ChristmasGame
 	{
 		public FestiveHouse()
 		{
-
 		}
 
 		public override void Spawn()
@@ -23,10 +22,16 @@ namespace ChristmasGame
 		[Input]
 		public void PresentHit( Entity activator = null )
 		{
-			if ( activator is not ModelEntity ent )
+			if ( activator is not PhysicsPresent present )
 				return;
 
+			Log.Info("present hit! " + IsServer + " " + Name);
+			present.Delete();
 
+			if ( Game.Current is not ChristmasGame game )
+				return;
+
+			game.PresentsDelivered++;
 		}
 	}
 }
