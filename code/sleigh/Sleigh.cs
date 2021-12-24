@@ -15,7 +15,8 @@ namespace ChristmasGame
 		Entity end;
 		float length;
 		float dist = 0.0f;
-		float fuel = 0.0f;
+		[Net, Change] float Fuel { get; set; } = 0.0f;
+
 		float speed = 0.0f;
 
 		Entity parentDummy;
@@ -30,11 +31,21 @@ namespace ChristmasGame
 			
 		}
 
+		public void OnFuelChanged(float oldValue, float newValue)
+		{
+			if ( !IsClient )
+				return;
+
+			foreach ( var child in Local.Hud.Children )
+				(child as ChristmasHUD).FuelMeter.Fuel = Fuel;
+		}
+
 		public void AddPlayer(FestivePlayer player)
 		{
 			player.ClientSleigh = this;
 			//player.Position = Position;
 			player.Parent = parentDummy;
+			player.LocalPosition = new Vector3();
 
 			//player.Parent = this;
 			//player.LocalPosition = new Vector3();
@@ -139,7 +150,7 @@ namespace ChristmasGame
 
 			foreach ( var engine in Engines )
 			{
-				fuel += (float)engine.FuelToBurn;
+				Fuel += (float)engine.FuelToBurn;
 				engine.FuelToBurn = 0;
 			}
 
@@ -151,10 +162,10 @@ namespace ChristmasGame
 
 			float travelDist = 0.0f;
 
-			if( fuel > fuelConsumptionRate )
+			if( Fuel > fuelConsumptionRate )
 			{
 				//Log.Info("burning fuel " + fuel);
-				fuel -= fuelConsumptionRate;
+				Fuel -= fuelConsumptionRate;
 				//Log.Info( "fuel " + fuel );
 
 				speed += 4.0f;

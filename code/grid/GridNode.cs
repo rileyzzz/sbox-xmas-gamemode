@@ -85,7 +85,10 @@ namespace ChristmasGame
 				var tierData = typeData.tiers[Tier];
 				rate = tierData.rate;
 				SetModel( tierData.model );
-				SetupPhysicsFromModel( PhysicsMotionType.Static );
+
+				if( Behavior != NodeBehavior.Consumer )
+					SetupPhysicsFromModel( PhysicsMotionType.Static );
+
 				//CollisionGroup = CollisionGroup.Trigger;
 				ClearCollisionLayers();
 				AddCollisionLayer( CollisionLayer.Hitbox );

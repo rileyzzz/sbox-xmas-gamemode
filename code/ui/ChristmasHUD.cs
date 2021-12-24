@@ -25,7 +25,7 @@ namespace ChristmasGame
 		NodeContext context;
 		PresentMeter meter;
 		AmmoDisplay ammo;
-
+		public FuelMeter FuelMeter;
 
 		Panel hintContainer;
 
@@ -58,10 +58,14 @@ namespace ChristmasGame
 			context = AddChild<NodeContext>( "context" );
 			meter = AddChild<PresentMeter>( "meterContainer" );
 			ammo = AddChild<AmmoDisplay>( "ammoDisplay" );
-			
+			FuelMeter = AddChild<FuelMeter>( "fuelMeter" );
+
 			ammo.Style.Left = Length.Pixels( 10 );
 			ammo.Style.Top = Length.Pixels( 10 );
 			ammo.Style.Display = DisplayMode.None;
+
+			FuelMeter.Style.Top = Length.Pixels( 10 );
+			FuelMeter.Style.Right = Length.Pixels( 120 );
 
 			hintContainer = AddChild<Panel>( "hintContainer" );
 
