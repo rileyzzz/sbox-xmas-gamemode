@@ -7,6 +7,8 @@ namespace ChristmasGame
 {
 	public partial class EngineNode : GridNode
 	{
+		public int FuelToBurn = 0;
+
 		public EngineNode()
 		{
 		}
@@ -14,6 +16,8 @@ namespace ChristmasGame
 		protected override void Consume( int count )
 		{
 			base.Consume( count );
+
+			FuelToBurn += count;
 
 			//Log.Info( "engine input" );
 		}

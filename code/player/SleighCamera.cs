@@ -38,7 +38,7 @@ namespace ChristmasGame
 				//lookTarget = targetPos + new Vector3(100.0f, 0.0f, 0.0f);
 
 				targetPos = new Vector3( 640.0f, 0.0f, -640.0f );
-				lookTarget = targetPos + new Vector3( 100.0f, 0.0f, -40.0f );
+				lookTarget = targetPos + new Vector3( 100.0f, 0.0f, -35.0f );
 				//lookTarget = targetPos + new Vector3( 100.0f, 80.0f, 10.0f );
 
 				FieldOfView = 40;

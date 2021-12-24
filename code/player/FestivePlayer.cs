@@ -445,7 +445,7 @@ namespace ChristmasGame
 			
 			//present.Position = ((SleighCamera)player.Camera).Position;
 			present.Position = start + dir * 100.0f;
-			present.Velocity = dir * 3000.0f;
+			present.Velocity = dir * 5000.0f;
 
 			Log.Info( "present start pos " + present.Position );
 		}

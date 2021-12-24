@@ -15,8 +15,12 @@ namespace ChristmasGame
 		Entity end;
 		float length;
 		float dist = 0.0f;
+		float fuel = 0.0f;
+		float speed = 0.0f;
 
 		Entity parentDummy;
+
+		List<EngineNode> Engines = new();
 
 
 		public Sleigh()
@@ -78,6 +82,13 @@ namespace ChristmasGame
 				Grid.PlaceNode<GridNode>( "boxer", 6, 10, 0, 0 );
 				Grid.PlaceNode<GridNode>( "conveyorbelt", 7, 10, 0, 0 );
 				Grid.PlaceNode<GridNode>( "wrapper", 8, 10, 0, 0 );
+
+				foreach(var node in Grid.Nodes)
+				{
+					if ( node is not EngineNode engine )
+						continue;
+					Engines.Add( engine );
+				}
 			}
 		}
 
@@ -110,6 +121,7 @@ namespace ChristmasGame
 			//Players[i].Position = Transform.PointToWorld( positions[i] );
 		}
 
+
 		public override void Simulate( Client cl )
 		{
 			base.Simulate( cl );
@@ -125,16 +137,45 @@ namespace ChristmasGame
 				Reposition( start.Position );
 			}
 
+			foreach ( var engine in Engines )
+			{
+				fuel += (float)engine.FuelToBurn;
+				engine.FuelToBurn = 0;
+			}
 
-			float speed = 50.0f;
+
+			//float speed = 50.0f;
+			//float speed = 0.0f;
+
+			float fuelConsumptionRate = 4.0f * Time.Delta;
+
+			float travelDist = 0.0f;
+
+			if( fuel > fuelConsumptionRate )
+			{
+				//Log.Info("burning fuel " + fuel);
+				fuel -= fuelConsumptionRate;
+				//Log.Info( "fuel " + fuel );
+
+				speed += 4.0f;
+
+				//travelDist = fuelConsumptionRate * 80.0f;
+			}
+
+
 			dist += speed * Time.Delta;
+			speed *= 0.99f;
+
+			//dist += speed * Time.Delta;
+			
 
 			if ( dist > length )
 			{
-				Log.Info("loop");
+				//Log.Info("loop");
 				dist = 0.0f;
 
 				Reposition( start.Position );
+				ChristmasGame.ResetHouses();
 			}
 
 			//Vector3 target = Vector3.Lerp(start.Position, end.Position, );

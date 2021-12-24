@@ -8,8 +8,23 @@ namespace ChristmasGame
 	//[Hammer.EditorModel( "models/house.vmdl" )]
 	public partial class FestiveHouse : ModelEntity
 	{
+		bool _stale = false;
+		public bool Stale
+		{
+			get => _stale;
+			set
+			{
+				_stale = value;
+				RenderColor = Stale ? Color.Red : Color.White;
+				GlowActive = Stale;
+				GlowState = Stale ? GlowStates.On : GlowStates.Off;
+			}
+		}
+
 		public FestiveHouse()
 		{
+			GlowColor = Color.Red;
+			//GlowState = GlowStates.GlowStateOn;
 		}
 
 		public override void Spawn()
@@ -19,9 +34,13 @@ namespace ChristmasGame
 			SetupPhysicsFromModel( PhysicsMotionType.Static );
 		}
 
+
 		[Input]
 		public void PresentHit( Entity activator = null )
 		{
+			if ( Stale )
+				return;
+
 			if ( activator is not PhysicsPresent present )
 				return;
 
@@ -32,6 +51,7 @@ namespace ChristmasGame
 				return;
 
 			game.PresentsDelivered++;
+			Stale = true;
 		}
 	}
 }

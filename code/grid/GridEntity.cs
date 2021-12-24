@@ -120,7 +120,8 @@ namespace ChristmasGame
 
 			Material tileMaterial = Material.Load( "materials/tile.vmat" );
 			//Material floorMaterial = Material.Load( "materials/crane_floor_a.vmat" );
-			Material floorMaterial = Material.Load( "materials/generic/wall_brick_older.vmat" );
+			Material floorMaterial = Material.Load( "materials/generic/floor_wooden_deck_a.vmat" );
+			//Material floorMaterial = Material.Load( "materials/generic/wall_brick_older.vmat" );
 
 			Mesh floorMesh = new Mesh( floorMaterial );
 			Mesh overlayMesh = new Mesh( tileMaterial );
@@ -141,14 +142,20 @@ namespace ChristmasGame
 				new Vertex( points[3], Vector3.Up, Vector3.Right, new Vector2(SizeX, SizeY) ),
 			};
 
-			const float floorScale = 0.25f;
+			//const float floorScale = 0.25f;
+			const float floorScale = 0.5f;
 
 			Vertex[] floor_vertices =
+//{
+//				new Vertex( points[0], Vector3.Up, Vector3.Right, new Vector2(SizeX * floorScale, 0) ),
+//				new Vertex( points[1], Vector3.Up, Vector3.Right, new Vector2(0, 0) ),
+//				new Vertex( points[2], Vector3.Up, Vector3.Right, new Vector2(0, SizeY * floorScale) ),
+//				new Vertex( points[3], Vector3.Up, Vector3.Right, new Vector2(SizeX * floorScale, SizeY * floorScale) ),
 {
-				new Vertex( points[0], Vector3.Up, Vector3.Right, new Vector2(SizeX * floorScale, 0) ),
-				new Vertex( points[1], Vector3.Up, Vector3.Right, new Vector2(0, 0) ),
-				new Vertex( points[2], Vector3.Up, Vector3.Right, new Vector2(0, SizeY * floorScale) ),
-				new Vertex( points[3], Vector3.Up, Vector3.Right, new Vector2(SizeX * floorScale, SizeY * floorScale) ),
+				new Vertex( points[0], Vector3.Up, Vector3.Right, new Vector2(SizeX * floorScale, SizeY * floorScale) ),
+				new Vertex( points[1], Vector3.Up, Vector3.Right, new Vector2(SizeX * floorScale, 0) ),
+				new Vertex( points[2], Vector3.Up, Vector3.Right, new Vector2(0, 0) ),
+				new Vertex( points[3], Vector3.Up, Vector3.Right, new Vector2(0, SizeY * floorScale) ),
 			};
 
 			VertexBuffer floor_vb = new VertexBuffer();

@@ -43,7 +43,7 @@ namespace ChristmasGame
 
 		[Net] List<Sleigh> ActiveSleighs { get; set; } = new();
 		[Net, Change] public int PresentsDelivered { get; set; } = 0;
-		public int MaxPresents = 500;
+		public int MaxPresents = 150;
 
 		public ChristmasGame()
 		{
@@ -75,6 +75,18 @@ namespace ChristmasGame
 			if ( IsClient )
 			{
 
+			}
+		}
+
+		public static void ResetHouses()
+		{
+			Log.Info( "resetting houses" );
+
+			foreach( var ent in Entity.All )
+			{
+				if ( ent is not FestiveHouse house )
+					continue;
+				house.Stale = false;
 			}
 		}
 
