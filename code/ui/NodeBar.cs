@@ -89,7 +89,7 @@ namespace ChristmasGame
 
 				var typeData = ChristmasGame.Config.nodes[_item.Type].tiers[_item.Tier];
 
-				Icon.Style.BackgroundImage = Texture.Load( typeData.icon );
+				Icon.Style.BackgroundImage = Texture.Load( FileSystem.Mounted, typeData.icon );
 
 				if ( Item.Count == 0 )
 				{
@@ -102,7 +102,7 @@ namespace ChristmasGame
 		public ItemButton()
 		{
 			Icon = AddChild<Image>( "image" );
-			OverlayText = Icon.AddChild<Label>( "label" );
+			OverlayText = AddChild<Label>( "label" );
 		}
 
 		protected override void OnMouseOver( MousePanelEvent e )
